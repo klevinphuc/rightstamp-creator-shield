@@ -166,13 +166,13 @@ function Landing() {
               </a>
             </div>
 
-            <div className="mt-10 flex flex-wrap items-center gap-6 text-white/70 text-sm">
+            <div className="mt-10 flex flex-wrap items-center gap-6 text-white/80 text-sm">
               <div className="flex items-center gap-2">
-                <ShieldCheck size={18} className="text-maroon-soft" />
+                <ShieldCheck size={18} className="text-coral" />
                 Hash + Timestamp
               </div>
               <div className="flex items-center gap-2">
-                <QrCode size={18} className="text-maroon-soft" />
+                <QrCode size={18} className="text-coral" />
                 QR xác minh công khai
               </div>
               <div className="flex items-center gap-2">
