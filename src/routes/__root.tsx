@@ -84,14 +84,18 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
           "RightStamp giúp creator Việt tạo dấu vân tay số, chứng chỉ bản quyền và Evidence Pack để bảo vệ tác phẩm số minh bạch, có giá trị pháp lý.",
       },
       { name: "author", content: "RightStamp" },
-      { property: "og:title", content: "RightStamp — Chứng nhận bản quyền cho creator Việt" },
+      { property: "og:title", content: "RightStamp — Dấu vân tay bản quyền cho tác phẩm số" },
       {
         property: "og:description",
         content:
-          "Nền tảng tạo dấu vân tay số, watermark và Evidence Pack cho tác phẩm số của creator cá nhân tại Việt Nam.",
+          "RightStamp giúp creator Việt tạo dấu vân tay số, chứng chỉ bản quyền và Evidence Pack để bảo vệ tác phẩm số minh bạch, có giá trị pháp lý.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:title", content: "RightStamp — Dấu vân tay bản quyền cho tác phẩm số" },
+      { name: "twitter:description", content: "RightStamp giúp creator Việt tạo dấu vân tay số, chứng chỉ bản quyền và Evidence Pack để bảo vệ tác phẩm số minh bạch, có giá trị pháp lý." },
+      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/adbc9126-8e6b-4fc7-b89c-04a4c28937c7/id-preview-ad97b3a6--7a71d7d3-bcd5-47cc-be56-7165c4da70db.lovable.app-1783744158474.png" },
+      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/adbc9126-8e6b-4fc7-b89c-04a4c28937c7/id-preview-ad97b3a6--7a71d7d3-bcd5-47cc-be56-7165c4da70db.lovable.app-1783744158474.png" },
     ],
     links: [
       { rel: "stylesheet", href: appCss },
