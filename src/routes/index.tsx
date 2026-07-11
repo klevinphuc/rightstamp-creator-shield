@@ -649,3 +649,670 @@ function ArrowDots({ className = "" }: { className?: string }) {
     </svg>
   );
 }
+
+/* ============================================================
+   9. FEATURES TABS SECTION
+   ============================================================ */
+const FEATURE_TABS = [
+  {
+    id: "upload",
+    icon: UploadCloud,
+    label: "Upload tác phẩm",
+    title: "Tải lên mọi loại tác phẩm số",
+    desc: "Hỗ trợ đa dạng định dạng: ảnh (PNG/JPG/PSD/AI/Procreate), video (MP4/MOV), âm thanh (MP3/WAV), văn bản (PDF/DOCX), thiết kế (poster/logo/brand guideline) và cả file gốc/phác thảo.",
+    bullets: [
+      "Tên tác phẩm, tác giả, chủ sở hữu",
+      "Ngày hoàn thành & mô tả ý tưởng",
+      "Quá trình sáng tạo, tuyên bố quyền",
+    ],
+    visual: "upload",
+  },
+  {
+    id: "fingerprint",
+    icon: Fingerprint,
+    label: "Dấu vân tay số",
+    title: "Tạo dấu vân tay số duy nhất",
+    desc: "Hệ thống tự động sinh mã định danh, hash SHA-256, timestamp, QR code, metadata và lưu version history đầy đủ cho mỗi lần cập nhật.",
+    bullets: [
+      "Mã định danh RS-2026-000128",
+      "Hash SHA-256 + Timestamp UTC",
+      "QR Code + Version History",
+    ],
+    visual: "fingerprint",
+  },
+  {
+    id: "watermark",
+    icon: Stamp,
+    label: "Watermark",
+    title: "Watermark thẩm mỹ, không phá hỏng tác phẩm",
+    desc: "Hai loại watermark linh hoạt: watermark nhìn thấy (logo/tên tác giả đè lên ảnh) và watermark ẩn/metadata (gắn ngầm vào file để truy vết vi phạm sau này).",
+    bullets: [
+      "Watermark nhìn thấy tuỳ biến",
+      "Metadata ẩn không thể xóa dễ dàng",
+      "Tem 'RightStamp Verified' đẹp mắt",
+    ],
+    visual: "watermark",
+  },
+  {
+    id: "certificate",
+    icon: Award,
+    label: "Giấy chứng nhận",
+    title: "Chứng chỉ bản quyền chuẩn văn bằng",
+    desc: "Mỗi tác phẩm được cấp một giấy chứng nhận đầy đủ thông tin: tên tác phẩm, tác giả, mã định danh, ngày xác thực, hash file, QR xác minh và tuyên bố quyền.",
+    bullets: [
+      "Thiết kế khung viền trang trọng",
+      "Xuất PDF chất lượng in ấn",
+      "Chia sẻ link công khai dễ dàng",
+    ],
+    visual: "certificate",
+  },
+  {
+    id: "verify",
+    icon: Smartphone,
+    label: "Trang xác minh QR",
+    title: "Quét QR — Xác minh trong 2 giây",
+    desc: "Bất kỳ ai quét mã QR đều thấy thông tin tác phẩm, tác giả, ngày xác thực, trạng thái (Verified / Disputed / Removed) cùng điều khoản sử dụng và nút liên hệ cấp phép.",
+    bullets: [
+      "Badge trạng thái xanh/vàng/đỏ",
+      "Giao diện tối ưu di động",
+      "Nút 'Yêu cầu cấp phép' tích hợp",
+    ],
+    visual: "verify",
+  },
+  {
+    id: "evidence",
+    icon: FolderArchive,
+    label: "Evidence Pack",
+    title: "Bộ hồ sơ chứng cứ tranh chấp",
+    desc: "Khi bị vi phạm, chỉ một cú click để xuất bộ hồ sơ đầy đủ giá trị pháp lý: file gốc, hash, timestamp, phác thảo, certificate, ảnh chụp vi phạm, bảng so sánh và tuyên bố quyền tác giả.",
+    bullets: [
+      "File gốc + phác thảo + certificate",
+      "Ảnh chụp vi phạm + bảng so sánh",
+      "Tuyên bố quyền tác giả chuẩn form",
+    ],
+    visual: "evidence",
+  },
+] as const;
+
+function FeaturesTabsSection() {
+  const [active, setActive] = useState<(typeof FEATURE_TABS)[number]["id"]>("upload");
+  const current = FEATURE_TABS.find((t) => t.id === active)!;
+
+  return (
+    <section id="tinh-nang-noi-bat" className="py-20 md:py-28 bg-cream">
+      <div className="container-x">
+        <div className="text-center max-w-2xl mx-auto">
+          <p className="text-maroon font-bold text-sm tracking-widest uppercase">
+            6 Module cốt lõi
+          </p>
+          <h2 className="mt-3 font-display text-3xl md:text-5xl text-ink">
+            TÍNH NĂNG CỦA RIGHTSTAMP
+          </h2>
+          <p className="mt-4 text-muted-foreground">
+            Click từng tab để khám phá cách RightStamp bảo vệ tác phẩm của bạn.
+          </p>
+        </div>
+
+        <div className="mt-12 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2 md:gap-3">
+          {FEATURE_TABS.map((t) => {
+            const Icon = t.icon;
+            const isActive = active === t.id;
+            return (
+              <button
+                key={t.id}
+                onClick={() => setActive(t.id)}
+                className={`group flex flex-col items-center gap-2 p-4 rounded-xl border-2 transition-all ${
+                  isActive
+                    ? "bg-maroon border-maroon text-white shadow-lg shadow-maroon/25"
+                    : "bg-white border-border text-ink hover:border-maroon/50"
+                }`}
+              >
+                <Icon size={26} strokeWidth={2} />
+                <span className="text-xs md:text-sm font-bold text-center leading-tight">
+                  {t.label}
+                </span>
+              </button>
+            );
+          })}
+        </div>
+
+        <div className="mt-10 bg-white rounded-3xl border border-border shadow-xl overflow-hidden grid grid-cols-1 lg:grid-cols-2">
+          <div className="p-8 md:p-12 flex flex-col justify-center">
+            <div className="inline-flex items-center gap-2 text-maroon font-bold text-xs uppercase tracking-widest">
+              <current.icon size={16} />
+              {current.label}
+            </div>
+            <h3 className="mt-4 font-display text-2xl md:text-4xl text-ink leading-tight">
+              {current.title}
+            </h3>
+            <p className="mt-4 text-muted-foreground leading-relaxed">
+              {current.desc}
+            </p>
+            <ul className="mt-6 space-y-3">
+              {current.bullets.map((b) => (
+                <li key={b} className="flex items-start gap-3">
+                  <span className="mt-0.5 h-6 w-6 rounded-full bg-maroon/10 text-maroon grid place-items-center shrink-0">
+                    <Check size={14} strokeWidth={3} />
+                  </span>
+                  <span className="text-sm text-ink">{b}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <div className="bg-gradient-to-br from-maroon/5 via-cream to-coral/10 p-8 md:p-12 grid place-items-center border-t lg:border-t-0 lg:border-l border-border">
+            <FeatureVisual kind={current.visual} />
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function FeatureVisual({ kind }: { kind: string }) {
+  if (kind === "upload") {
+    return (
+      <div className="w-full max-w-md space-y-4">
+        <div className="border-2 border-dashed border-maroon/40 rounded-2xl p-8 bg-white text-center">
+          <div className="mx-auto h-14 w-14 rounded-full bg-maroon/10 grid place-items-center text-maroon">
+            <UploadCloud size={28} />
+          </div>
+          <p className="mt-3 font-bold text-ink">Kéo & thả tệp vào đây</p>
+          <p className="text-xs text-muted-foreground mt-1">
+            PNG · JPG · PSD · MP4 · MP3 · PDF · DOCX
+          </p>
+        </div>
+        <div className="bg-white rounded-xl border border-border p-4 space-y-3">
+          <MockField label="Tên tác phẩm" value="Bộ tranh 'Hà Nội mùa thu'" />
+          <MockField label="Tác giả" value="Nguyễn Minh Anh" />
+          <MockField label="Ngày hoàn thành" value="12/03/2026" />
+        </div>
+      </div>
+    );
+  }
+  if (kind === "fingerprint") {
+    return (
+      <div className="w-full max-w-md bg-white rounded-2xl border-2 border-maroon/30 p-6 shadow-lg relative overflow-hidden">
+        <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-transparent via-maroon to-transparent animate-pulse" />
+        <div className="flex items-center justify-between">
+          <div>
+            <p className="text-xs text-muted-foreground uppercase tracking-widest">
+              Mã định danh
+            </p>
+            <p className="font-display text-xl text-maroon mt-1">RS-2026-000128</p>
+          </div>
+          <div className="h-16 w-16 rounded-lg bg-ink grid place-items-center">
+            <QrCode size={40} className="text-white" />
+          </div>
+        </div>
+        <div className="mt-5 space-y-2 text-xs">
+          <MockRow label="SHA-256" value="a3f9…82b1c" />
+          <MockRow label="Timestamp" value="2026-03-12T09:41:22Z" />
+          <MockRow label="Version" value="v1.0.0" />
+          <MockRow label="Status" value="✓ Verified" valueColor="text-green-600" />
+        </div>
+      </div>
+    );
+  }
+  if (kind === "watermark") {
+    return (
+      <div className="w-full max-w-md grid grid-cols-2 gap-3">
+        <div className="rounded-xl overflow-hidden border border-border bg-gradient-to-br from-orange-300 to-pink-400 aspect-square grid place-items-center relative">
+          <span className="text-white/90 font-bold text-xs absolute top-2 left-2 bg-black/30 px-2 py-0.5 rounded">
+            GỐC
+          </span>
+          <ImageIcon size={40} className="text-white/70" />
+        </div>
+        <div className="rounded-xl overflow-hidden border border-border bg-gradient-to-br from-orange-300 to-pink-400 aspect-square grid place-items-center relative">
+          <span className="text-white/90 font-bold text-xs absolute top-2 left-2 bg-maroon px-2 py-0.5 rounded">
+            ĐÃ WATERMARK
+          </span>
+          <ImageIcon size={40} className="text-white/70" />
+          <div className="absolute inset-0 grid place-items-center">
+            <span className="rotate-[-20deg] text-white/60 font-display text-lg tracking-widest">
+              © RIGHTSTAMP
+            </span>
+          </div>
+          <div className="absolute bottom-2 right-2 h-8 w-8 rounded bg-white grid place-items-center">
+            <QrCode size={20} className="text-ink" />
+          </div>
+        </div>
+      </div>
+    );
+  }
+  if (kind === "certificate") {
+    return (
+      <div className="w-full max-w-md bg-white rounded-lg border-4 border-double border-maroon p-6 text-center shadow-xl">
+        <p className="font-display text-maroon text-xs tracking-[0.3em]">
+          RIGHTSTAMP CERTIFICATE
+        </p>
+        <div className="mt-3 h-px bg-maroon/30" />
+        <p className="mt-4 text-xs text-muted-foreground uppercase">
+          Chứng nhận tác phẩm
+        </p>
+        <p className="font-display text-xl text-ink mt-1">
+          "Hà Nội mùa thu"
+        </p>
+        <p className="mt-2 text-sm text-ink">Nguyễn Minh Anh</p>
+        <div className="mt-4 grid grid-cols-2 gap-2 text-[10px] text-left">
+          <MockRow label="Mã" value="RS-2026-000128" />
+          <MockRow label="Ngày" value="12/03/2026" />
+        </div>
+        <div className="mt-4 grid grid-cols-[1fr_auto] gap-3 items-end">
+          <p className="text-[10px] text-muted-foreground leading-tight text-left">
+            Hash SHA-256: a3f9…82b1c<br />
+            Verified by RightStamp — Xác nhận quyền tác giả theo Luật SHTT Việt Nam.
+          </p>
+          <div className="h-14 w-14 rounded bg-ink grid place-items-center">
+            <QrCode size={40} className="text-white" />
+          </div>
+        </div>
+      </div>
+    );
+  }
+  if (kind === "verify") {
+    return (
+      <div className="w-[260px] rounded-[2rem] border-[8px] border-ink bg-white overflow-hidden shadow-2xl">
+        <div className="bg-ink text-white text-center py-2 text-xs">
+          verify.rightstamp.vn
+        </div>
+        <div className="p-4 space-y-3">
+          <div className="inline-flex items-center gap-1.5 bg-green-100 text-green-700 px-2.5 py-1 rounded-full text-[11px] font-bold">
+            <Check size={12} strokeWidth={3} /> VERIFIED
+          </div>
+          <div>
+            <p className="font-display text-ink text-base leading-tight">
+              "Hà Nội mùa thu"
+            </p>
+            <p className="text-xs text-muted-foreground mt-0.5">
+              Nguyễn Minh Anh
+            </p>
+          </div>
+          <div className="h-24 w-24 mx-auto rounded bg-ink grid place-items-center">
+            <QrCode size={72} className="text-white" />
+          </div>
+          <div className="text-[11px] space-y-1 text-ink">
+            <MockRow label="Xác thực" value="12/03/2026" />
+            <MockRow label="Mã" value="RS-2026-000128" />
+          </div>
+          <button className="w-full bg-maroon text-white text-xs font-bold py-2 rounded-md">
+            Yêu cầu cấp phép
+          </button>
+        </div>
+      </div>
+    );
+  }
+  if (kind === "evidence") {
+    return (
+      <div className="w-full max-w-md bg-white rounded-2xl border border-border p-6 shadow-lg">
+        <div className="flex items-center gap-3">
+          <div className="h-12 w-12 rounded-xl bg-maroon/10 text-maroon grid place-items-center">
+            <FolderArchive size={24} />
+          </div>
+          <div>
+            <p className="font-display text-lg text-ink">Evidence Pack</p>
+            <p className="text-xs text-muted-foreground">RS-2026-000128 · 8 tài liệu</p>
+          </div>
+        </div>
+        <ul className="mt-5 space-y-2 text-sm">
+          {[
+            "File gốc tác phẩm",
+            "Hash SHA-256 + Timestamp",
+            "Bản phác thảo, file layer",
+            "Certificate PDF",
+            "Ảnh chụp bên vi phạm",
+            "Bảng so sánh chi tiết",
+            "Tuyên bố quyền tác giả",
+          ].map((i) => (
+            <li key={i} className="flex items-center gap-2 text-ink">
+              <Check size={16} className="text-green-600 shrink-0" strokeWidth={3} />
+              {i}
+            </li>
+          ))}
+        </ul>
+        <button className="mt-6 w-full bg-maroon hover:bg-maroon-deep transition-colors text-white font-bold py-3 rounded-lg shadow">
+          Xuất hồ sơ chứng cứ
+        </button>
+      </div>
+    );
+  }
+  return null;
+}
+
+function MockField({ label, value }: { label: string; value: string }) {
+  return (
+    <div>
+      <p className="text-[10px] uppercase tracking-widest text-muted-foreground">
+        {label}
+      </p>
+      <p className="text-sm text-ink font-medium mt-0.5">{value}</p>
+    </div>
+  );
+}
+function MockRow({
+  label,
+  value,
+  valueColor = "text-ink",
+}: {
+  label: string;
+  value: string;
+  valueColor?: string;
+}) {
+  return (
+    <div className="flex justify-between gap-2 border-b border-dashed border-border pb-1">
+      <span className="text-muted-foreground">{label}</span>
+      <span className={`font-mono ${valueColor}`}>{value}</span>
+    </div>
+  );
+}
+
+/* ============================================================
+   10. RIGHTY AI SECTION
+   ============================================================ */
+const RIGHTY_CARDS = [
+  {
+    icon: Wand2,
+    title: "AI Smart Classifier",
+    desc: "Tự động phân tích tác phẩm và gợi ý loại quyền được bảo hộ (quyền tác giả, nhãn hiệu, kiểu dáng công nghiệp...).",
+    demo: {
+      user: "Vừa upload một bộ nhận diện thương hiệu cà phê.",
+      righty:
+        "Tác phẩm của bạn sẽ được bảo hộ tự động dưới dạng Quyền tác giả (mỹ thuật ứng dụng). Ngoài ra, mình đề xuất đăng ký thêm Nhãn hiệu cho logo và Kiểu dáng công nghiệp cho bao bì để bảo vệ toàn diện hơn.",
+    },
+  },
+  {
+    icon: ScanSearch,
+    title: "AI Metadata Generator",
+    desc: "Đọc file bằng Vision AI để gợi ý từ khóa, mô tả sản phẩm, tự điền các trường thông tin — bạn khỏi gõ tay.",
+    demo: {
+      user: "Bạn điền metadata giúp mình bức ảnh này nhé.",
+      righty:
+        "Đã phân tích xong! Gợi ý: 'Ảnh chân dung ánh sáng ngược, tông ấm, chủ đề phụ nữ Việt Nam, phong cách documentary'. Từ khóa: chân dung, ánh sáng, tone ấm, người Việt, tài liệu.",
+    },
+  },
+  {
+    icon: ShieldCheck,
+    title: "Phân tích vi phạm",
+    desc: "Dán link hoặc upload ảnh nghi vi phạm — AI so sánh độ tương đồng với database và xuất báo cáo dễ hiểu.",
+    demo: {
+      user: "Kiểm tra giúp mình link Shopee này có copy tác phẩm không.",
+      righty:
+        "Mức độ tương đồng: 87%. Bên bán sử dụng lại thiết kế của bạn với chỉnh sửa nhẹ về màu sắc. Đây có dấu hiệu vi phạm quyền tác giả. Bạn có muốn mình soạn email cảnh báo không?",
+    },
+  },
+  {
+    icon: PenTool,
+    title: "AI Legal Writer",
+    desc: "Dựa trên Evidence Pack, AI soạn email nhắc nhở, cảnh báo bản quyền và đơn kháng nghị DMCA chuẩn form từng nền tảng.",
+    demo: {
+      user: "Soạn giúp mình đơn takedown gửi TikTok.",
+      righty:
+        "Đã tạo mẫu 'DMCA Takedown Notice' theo form chính thức của TikTok, trích dẫn Điều 28 Luật SHTT Việt Nam và đính kèm Evidence Pack RS-2026-000128. Bạn xem qua trước khi gửi nhé!",
+    },
+  },
+] as const;
+
+function RightyAISection() {
+  const [openDemo, setOpenDemo] = useState<number | null>(null);
+  return (
+    <section
+      id="righty"
+      className="py-20 md:py-28 relative overflow-hidden text-white"
+      style={{
+        background:
+          "radial-gradient(1000px 500px at 80% 20%, rgba(139,30,30,0.55), transparent 60%), radial-gradient(800px 400px at 10% 80%, rgba(78,86,255,0.4), transparent 60%), linear-gradient(180deg, #0b0f1a 0%, #14091a 100%)",
+      }}
+    >
+      <div className="absolute inset-0 opacity-[0.04] pointer-events-none [background-image:radial-gradient(#fff_1px,transparent_1px)] [background-size:24px_24px]" />
+
+      <div className="container-x relative">
+        <div className="grid grid-cols-1 lg:grid-cols-[auto_1fr] items-center gap-8">
+          <div className="mx-auto lg:mx-0">
+            <div className="relative h-32 w-32 rounded-3xl bg-gradient-to-br from-maroon to-royal grid place-items-center shadow-2xl shadow-maroon/40">
+              <Bot size={64} className="text-white" />
+              <span className="absolute -top-2 -right-2 h-6 w-6 rounded-full bg-green-500 border-4 border-[#0b0f1a]" />
+            </div>
+          </div>
+          <div>
+            <p className="text-coral font-bold text-sm tracking-widest uppercase">
+              Trợ lý AI
+            </p>
+            <h2 className="mt-3 font-display text-3xl md:text-5xl leading-tight">
+              RIGHTY — TRỢ LÝ PHÁP LÝ SỐ CHO CREATOR
+            </h2>
+            <p className="mt-4 text-white/70 max-w-2xl">
+              Righty đồng hành cùng bạn từ lúc đăng tải tác phẩm đến khi xử lý
+              tranh chấp — mọi thứ diễn ra ngay trong giao diện, bằng tiếng Việt
+              dễ hiểu.
+            </p>
+          </div>
+        </div>
+
+        <div className="mt-14 grid grid-cols-1 md:grid-cols-2 gap-5">
+          {RIGHTY_CARDS.map((c, i) => {
+            const Icon = c.icon;
+            return (
+              <div
+                key={c.title}
+                className="group relative rounded-2xl bg-white/[0.04] border border-white/10 hover:border-coral/50 p-6 md:p-8 backdrop-blur transition-colors"
+              >
+                <div className="flex items-start gap-4">
+                  <div className="h-14 w-14 rounded-2xl bg-gradient-to-br from-coral to-maroon grid place-items-center shrink-0 shadow-lg">
+                    <Icon size={26} className="text-white" />
+                  </div>
+                  <div className="min-w-0">
+                    <h3 className="font-display text-xl text-white">{c.title}</h3>
+                    <p className="mt-2 text-white/70 text-sm leading-relaxed">
+                      {c.desc}
+                    </p>
+                    <button
+                      onClick={() => setOpenDemo(i)}
+                      className="mt-4 inline-flex items-center gap-1.5 text-coral hover:text-white text-sm font-bold"
+                    >
+                      Xem ví dụ
+                      <ArrowRight size={14} />
+                    </button>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
+      {openDemo !== null && (
+        <RightyDemoModal
+          card={RIGHTY_CARDS[openDemo]}
+          onClose={() => setOpenDemo(null)}
+        />
+      )}
+    </section>
+  );
+}
+
+function RightyDemoModal({
+  card,
+  onClose,
+}: {
+  card: (typeof RIGHTY_CARDS)[number];
+  onClose: () => void;
+}) {
+  return (
+    <div
+      className="fixed inset-0 z-[100] bg-black/70 backdrop-blur-sm grid place-items-center p-4"
+      onClick={onClose}
+    >
+      <div
+        className="bg-white text-ink rounded-2xl max-w-lg w-full overflow-hidden shadow-2xl"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="flex items-center justify-between p-4 border-b border-border">
+          <div className="flex items-center gap-3">
+            <div className="h-10 w-10 rounded-full bg-gradient-to-br from-maroon to-royal grid place-items-center">
+              <Bot size={20} className="text-white" />
+            </div>
+            <div>
+              <p className="font-bold text-sm">Righty</p>
+              <p className="text-[11px] text-muted-foreground">{card.title}</p>
+            </div>
+          </div>
+          <button
+            onClick={onClose}
+            className="h-9 w-9 rounded-full hover:bg-muted grid place-items-center"
+            aria-label="Đóng"
+          >
+            <X size={18} />
+          </button>
+        </div>
+        <div className="p-5 space-y-3 bg-cream/40 max-h-[70vh] overflow-y-auto">
+          <div className="flex justify-end">
+            <div className="bg-maroon text-white rounded-2xl rounded-tr-sm px-4 py-2.5 max-w-[85%] text-sm shadow">
+              {card.demo.user}
+            </div>
+          </div>
+          <div className="flex gap-2">
+            <div className="h-8 w-8 rounded-full bg-gradient-to-br from-maroon to-royal grid place-items-center shrink-0">
+              <Bot size={16} className="text-white" />
+            </div>
+            <div className="bg-white border border-border rounded-2xl rounded-tl-sm px-4 py-2.5 max-w-[85%] text-sm shadow-sm">
+              {card.demo.righty}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ============================================================
+   11. DIFFERENTIATORS SECTION
+   ============================================================ */
+const DIFFERENTIATORS = [
+  {
+    icon: FileText,
+    problem: "Nhiều creator không hiểu luật SHTT",
+    solution:
+      "Giao diện đơn giản, có checklist 'tác phẩm của bạn được bảo hộ gì?'",
+  },
+  {
+    icon: Globe,
+    problem: "Công cụ quốc tế khó dùng với người Việt",
+    solution:
+      "Giao diện tiếng Việt, ví dụ thực tế Việt Nam, hướng dẫn theo Luật SHTT Việt Nam",
+  },
+  {
+    icon: Scale,
+    problem:
+      "Nhiều nền tảng chỉ chứng nhận, không hướng dẫn xử lý tranh chấp",
+    solution: "Có Evidence Pack và mẫu email/đơn yêu cầu gỡ bỏ nội dung",
+  },
+  {
+    icon: Palette,
+    problem: "Watermark thường xấu, làm hỏng tác phẩm",
+    solution:
+      "Cho phép chọn watermark nhẹ, QR đẹp, tem xác thực thẩm mỹ",
+  },
+  {
+    icon: Tag,
+    problem: "Không biết tác phẩm được bảo hộ theo quyền nào",
+    solution:
+      "RightStamp tự phân loại: quyền tác giả, nhãn hiệu, kiểu dáng, bí mật kinh doanh",
+  },
+  {
+    icon: MessageCircle,
+    problem: "Creator muốn bán/tặng/cấp phép tác phẩm",
+    solution:
+      "Có trang hồ sơ công khai và nút 'Yêu cầu cấp phép' tích hợp sẵn",
+  },
+];
+
+function DifferentiatorsSection() {
+  return (
+    <section id="khac-biet" className="py-20 md:py-28 bg-white">
+      <div className="container-x">
+        <div className="text-center max-w-2xl mx-auto">
+          <p className="text-maroon font-bold text-sm tracking-widest uppercase">
+            Điểm khác biệt
+          </p>
+          <h2 className="mt-3 font-display text-3xl md:text-5xl text-ink">
+            ĐIỂM KHÁC BIỆT CỦA RIGHTSTAMP
+          </h2>
+          <p className="mt-4 text-muted-foreground">
+            Chúng tôi hiểu creator Việt cần gì — và giải quyết đúng những vấn
+            đề đó.
+          </p>
+        </div>
+
+        {/* Desktop table */}
+        <div className="mt-12 hidden md:block rounded-2xl border border-border overflow-hidden shadow-sm">
+          <div className="grid grid-cols-[1fr_1fr] bg-ink text-white font-display text-sm tracking-widest">
+            <div className="p-5 uppercase">Vấn đề creator gặp phải</div>
+            <div className="p-5 uppercase bg-maroon">
+              RightStamp giải quyết như thế nào
+            </div>
+          </div>
+          {DIFFERENTIATORS.map((d, i) => {
+            const Icon = d.icon;
+            return (
+              <div
+                key={i}
+                className={`grid grid-cols-[1fr_1fr] ${
+                  i % 2 === 0 ? "bg-white" : "bg-cream/60"
+                }`}
+              >
+                <div className="p-6 flex items-start gap-3 border-r border-border">
+                  <span className="mt-0.5 h-9 w-9 rounded-lg bg-ink/5 text-ink grid place-items-center shrink-0">
+                    <Icon size={18} />
+                  </span>
+                  <p className="text-ink">{d.problem}</p>
+                </div>
+                <div className="p-6 flex items-start gap-3">
+                  <span className="mt-0.5 h-9 w-9 rounded-lg bg-maroon/10 text-maroon grid place-items-center shrink-0">
+                    <Check size={18} strokeWidth={3} />
+                  </span>
+                  <p className="text-ink font-medium">{d.solution}</p>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+
+        {/* Mobile cards */}
+        <div className="mt-10 md:hidden space-y-4">
+          {DIFFERENTIATORS.map((d, i) => {
+            const Icon = d.icon;
+            return (
+              <div
+                key={i}
+                className="rounded-2xl border border-border bg-white p-5 shadow-sm"
+              >
+                <div className="flex items-start gap-3">
+                  <span className="h-9 w-9 rounded-lg bg-ink/5 text-ink grid place-items-center shrink-0">
+                    <Icon size={18} />
+                  </span>
+                  <div>
+                    <p className="text-[11px] uppercase tracking-widest text-muted-foreground font-bold">
+                      Vấn đề
+                    </p>
+                    <p className="text-ink mt-1">{d.problem}</p>
+                  </div>
+                </div>
+                <div className="mt-4 pt-4 border-t border-dashed border-border flex items-start gap-3">
+                  <span className="h-9 w-9 rounded-lg bg-maroon/10 text-maroon grid place-items-center shrink-0">
+                    <Check size={18} strokeWidth={3} />
+                  </span>
+                  <div>
+                    <p className="text-[11px] uppercase tracking-widest text-maroon font-bold">
+                      RightStamp
+                    </p>
+                    <p className="text-ink font-medium mt-1">{d.solution}</p>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    </section>
+  );
+}
