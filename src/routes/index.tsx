@@ -203,7 +203,7 @@ function Landing() {
           </div>
 
           <div className="mt-14 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {[
+            {([
               {
                 icon: Sparkles,
                 title: "DỄ DÙNG CHO CREATOR CÁ NHÂN",
