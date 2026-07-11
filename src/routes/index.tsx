@@ -319,6 +319,15 @@ function Landing() {
         </div>
       </section>
 
+      {/* ================= 9. TÍNH NĂNG NỔI BẬT (TABS) ================= */}
+      <FeaturesTabsSection />
+
+      {/* ================= 10. RIGHTY AI ================= */}
+      <RightyAISection />
+
+      {/* ================= 11. VÌ SAO KHÁC BIỆT ================= */}
+      <DifferentiatorsSection />
+
       {/* ================= PAY PER USE ================= */}
       <section id="bang-gia" className="py-20 md:py-28 bg-ink text-white">
         <div className="container-x">
