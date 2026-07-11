@@ -176,7 +176,7 @@ function Landing() {
                 QR xác minh công khai
               </div>
               <div className="flex items-center gap-2">
-                <FileCheck2 size={18} className="text-maroon-soft" />
+                <FileCheck2 size={18} className="text-coral" />
                 Evidence Pack
               </div>
             </div>
