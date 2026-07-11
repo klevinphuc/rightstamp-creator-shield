@@ -42,7 +42,7 @@
   --color-royal: var(--royal);
   --color-teal-brand: var(--teal-brand);
 
-  --font-display: "Archivo Black", "Be Vietnam Pro", sans-serif;
+  --font-display: "Be Vietnam Pro", ui-sans-serif, system-ui, sans-serif;
   --font-sans: "Be Vietnam Pro", ui-sans-serif, system-ui, sans-serif;
 }
 
@@ -95,9 +95,10 @@
     font-family: var(--font-sans);
     -webkit-font-smoothing: antialiased;
   }
-  h1, h2, h3, .display {
+  h1, h2, h3, .display, .font-display {
     font-family: var(--font-display);
-    letter-spacing: -0.01em;
+    font-weight: 900;
+    letter-spacing: -0.02em;
   }
 }
 
