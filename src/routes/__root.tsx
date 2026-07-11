@@ -77,19 +77,29 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Lovable App" },
-      { name: "description", content: "Lovable Generated Project" },
-      { name: "author", content: "Lovable" },
-      { property: "og:title", content: "Lovable App" },
-      { property: "og:description", content: "Lovable Generated Project" },
+      { title: "RightStamp — Dấu vân tay bản quyền cho tác phẩm số" },
+      {
+        name: "description",
+        content:
+          "RightStamp giúp creator Việt tạo dấu vân tay số, chứng chỉ bản quyền và Evidence Pack để bảo vệ tác phẩm số minh bạch, có giá trị pháp lý.",
+      },
+      { name: "author", content: "RightStamp" },
+      { property: "og:title", content: "RightStamp — Chứng nhận bản quyền cho creator Việt" },
+      {
+        property: "og:description",
+        content:
+          "Nền tảng tạo dấu vân tay số, watermark và Evidence Pack cho tác phẩm số của creator cá nhân tại Việt Nam.",
+      },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
-      { name: "twitter:site", content: "@Lovable" },
     ],
     links: [
+      { rel: "stylesheet", href: appCss },
+      { rel: "preconnect", href: "https://fonts.googleapis.com" },
+      { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
       {
         rel: "stylesheet",
-        href: appCss,
+        href: "https://fonts.googleapis.com/css2?family=Archivo+Black&family=Be+Vietnam+Pro:wght@400;500;600;700;800;900&display=swap",
       },
       { rel: "icon", href: "/favicon.ico", type: "image/x-icon" },
     ],
