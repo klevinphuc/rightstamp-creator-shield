@@ -124,26 +124,23 @@ function Landing() {
       {/* ================= HERO ================= */}
       <section
         id="gioi-thieu"
-        className="relative min-h-[92vh] flex items-center overflow-hidden"
+        className="relative min-h-[92vh] flex items-center overflow-hidden bg-[#141a24]"
         style={{
-          /* HERO BACKGROUND PLACEHOLDER — upload ảnh nền sau, thay url() */
-          backgroundImage:
-            "linear-gradient(180deg, rgba(20,10,10,0.75), rgba(20,10,10,0.55)), radial-gradient(1200px 600px at 20% 30%, #3a0f12 0%, #0e0507 60%, #000 100%)",
+          backgroundImage: `linear-gradient(90deg, rgba(10,14,22,0.85) 0%, rgba(10,14,22,0.55) 45%, rgba(10,14,22,0.25) 100%), url(${heroBg.url})`,
           backgroundSize: "cover",
           backgroundPosition: "center",
         }}
       >
         <div className="container-x relative z-10 py-24 md:py-32">
           <div className="max-w-3xl">
-            <div className="inline-flex items-center gap-2 rounded-full bg-white/10 border border-white/20 px-4 py-1.5 text-xs md:text-sm font-semibold text-white/90 backdrop-blur">
-              <Sparkles size={14} className="text-maroon-soft" />
+            <div className="inline-flex items-center gap-2 rounded-full bg-white/10 border border-white/25 px-4 py-1.5 text-xs md:text-sm font-semibold text-white backdrop-blur">
               Công cụ bảo vệ tác phẩm số
             </div>
 
-            <h1 className="mt-6 font-display text-white text-4xl sm:text-5xl md:text-7xl leading-[1.05]">
+            <h1 className="mt-6 font-display text-white text-4xl sm:text-5xl md:text-7xl leading-[1.05] drop-shadow-[0_2px_20px_rgba(0,0,0,0.5)]">
               Đóng dấu vân tay <br className="hidden sm:block" />
               cho từng nét{" "}
-              <span className="text-maroon-soft">sáng tạo</span> của bạn
+              <span className="text-coral">sáng tạo</span> của bạn
             </h1>
 
             <p className="mt-6 text-base md:text-lg text-white/80 max-w-2xl leading-relaxed">
