@@ -11,6 +11,7 @@ import {
   FileCheck2,
   Bot,
   Upload,
+  UploadCloud,
   Barcode,
   Award,
   Headphones,
@@ -20,6 +21,19 @@ import {
   Linkedin,
   ArrowRight,
   Sparkles,
+  Image as ImageIcon,
+  Smartphone,
+  FolderArchive,
+  Wand2,
+  ScanSearch,
+  PenTool,
+  Check,
+  MessageCircle,
+  FileText,
+  Tag,
+  Palette,
+  Globe,
+  Scale,
 } from "lucide-react";
 
 export const Route = createFileRoute("/")({
