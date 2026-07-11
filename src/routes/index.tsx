@@ -240,7 +240,7 @@ function Landing() {
                 desc: "Righty hướng dẫn bạn từng bước xử lý pháp lý sở hữu trí tuệ: từ đăng ký, phát hiện vi phạm đến gửi thông báo gỡ bỏ nội dung.",
                 color: "coral",
               },
-            ].map((f) => (
+            ] as const).map((f) => (
               <FeatureCard key={f.title} {...f} />
             ))}
           </div>
