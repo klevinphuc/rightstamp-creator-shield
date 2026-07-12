@@ -62,9 +62,11 @@ export function RightyAssistantWidget() {
     });
   }, [isOpen, messages]);
 
-  function submitQuestion(question: string) {
+  const [isSending, setIsSending] = useState(false);
+
+  async function submitQuestion(question: string) {
     const trimmed = question.trim();
-    if (!trimmed) return;
+    if (!trimmed || isSending) return;
 
     const latestWork = readRightStampCurrentWork();
     setWorkContext(latestWork);
@@ -72,14 +74,37 @@ export function RightyAssistantWidget() {
 
     const userMessage: RightyChatMessage = { role: "user", content: trimmed };
     const history = [...messages, userMessage];
-    const reply = generateRightyLocalReply({
-      input: trimmed,
-      history,
-      workContext: latestWork,
-    });
+    setMessages(history);
+    setInput("");
+    setIsSending(true);
+
+    let reply: string | null = null;
+    try {
+      const res = await fetch("/api/righty", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ messages: history, workContext: latestWork }),
+      });
+      if (res.ok) {
+        const data = (await res.json()) as { reply?: string };
+        if (data.reply) reply = data.reply;
+      } else {
+        console.error("Righty API error", res.status, await res.text());
+      }
+    } catch (error) {
+      console.error("Righty API fetch failed", error);
+    }
+
+    if (!reply) {
+      reply = generateRightyLocalReply({
+        input: trimmed,
+        history,
+        workContext: latestWork,
+      });
+    }
 
     setMessages([...history, { role: "assistant", content: reply }]);
-    setInput("");
+    setIsSending(false);
   }
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
