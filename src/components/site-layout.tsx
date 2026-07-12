@@ -262,7 +262,7 @@ function Footer() {
 
       <div className="container-x mt-14 flex flex-col justify-between gap-4 border-t border-white/10 pt-6 text-xs text-white/50 md:flex-row">
         <p>© 2026 RightStamp. Bảo lưu mọi quyền.</p>
-        <p>hello@rightstamp.vn · Hà Nội, Việt Nam</p>
+        <p>hello@rightstamp.vn · Tp.HCM, Việt Nam · Dự án của sinh viên Trường Đại học Ngoại Thương phân hiệu Tp.HCM</p>
       </div>
     </footer>
   );
