@@ -62,9 +62,11 @@ export function RightyAssistantWidget() {
     });
   }, [isOpen, messages]);
 
-  function submitQuestion(question: string) {
+  const [isSending, setIsSending] = useState(false);
+
+  async function submitQuestion(question: string) {
     const trimmed = question.trim();
-    if (!trimmed) return;
+    if (!trimmed || isSending) return;
 
     const latestWork = readRightStampCurrentWork();
     setWorkContext(latestWork);
@@ -72,14 +74,37 @@ export function RightyAssistantWidget() {
 
     const userMessage: RightyChatMessage = { role: "user", content: trimmed };
     const history = [...messages, userMessage];
-    const reply = generateRightyLocalReply({
-      input: trimmed,
-      history,
-      workContext: latestWork,
-    });
+    setMessages(history);
+    setInput("");
+    setIsSending(true);
+
+    let reply: string | null = null;
+    try {
+      const res = await fetch("/api/righty", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ messages: history, workContext: latestWork }),
+      });
+      if (res.ok) {
+        const data = (await res.json()) as { reply?: string };
+        if (data.reply) reply = data.reply;
+      } else {
+        console.error("Righty API error", res.status, await res.text());
+      }
+    } catch (error) {
+      console.error("Righty API fetch failed", error);
+    }
+
+    if (!reply) {
+      reply = generateRightyLocalReply({
+        input: trimmed,
+        history,
+        workContext: latestWork,
+      });
+    }
 
     setMessages([...history, { role: "assistant", content: reply }]);
-    setInput("");
+    setIsSending(false);
   }
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
@@ -133,6 +158,15 @@ export function RightyAssistantWidget() {
                 </div>
               </div>
             ))}
+            {isSending && (
+              <div className="flex justify-start">
+                <div className="flex items-center gap-1.5 rounded-2xl rounded-tl-sm border border-white/10 bg-white px-4 py-3 text-ink shadow">
+                  <span className="h-2 w-2 animate-bounce rounded-full bg-coral [animation-delay:-0.3s]" />
+                  <span className="h-2 w-2 animate-bounce rounded-full bg-coral [animation-delay:-0.15s]" />
+                  <span className="h-2 w-2 animate-bounce rounded-full bg-coral" />
+                </div>
+              </div>
+            )}
           </div>
 
           <div className="grid grid-cols-2 gap-2 border-t border-white/10 p-3">
@@ -159,12 +193,14 @@ export function RightyAssistantWidget() {
             <input
               value={input}
               onChange={(event) => setInput(event.target.value)}
-              className="min-w-0 flex-1 rounded-xl border border-white/12 bg-white px-4 py-3 text-sm text-ink outline-none focus:border-coral focus:ring-2 focus:ring-coral/25"
+              disabled={isSending}
+              className="min-w-0 flex-1 rounded-xl border border-white/12 bg-white px-4 py-3 text-sm text-ink outline-none focus:border-coral focus:ring-2 focus:ring-coral/25 disabled:opacity-60"
               placeholder="Hỏi Righty..."
             />
             <button
               type="submit"
-              className="grid h-12 w-12 shrink-0 place-items-center rounded-xl bg-coral text-white transition-colors hover:bg-maroon"
+              disabled={isSending}
+              className="grid h-12 w-12 shrink-0 place-items-center rounded-xl bg-coral text-white transition-colors hover:bg-maroon disabled:cursor-not-allowed disabled:opacity-60"
               aria-label="Gửi câu hỏi"
             >
               <Send size={18} />
