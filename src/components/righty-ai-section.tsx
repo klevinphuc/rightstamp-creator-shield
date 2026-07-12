@@ -158,6 +158,15 @@ export function RightyAssistantWidget() {
                 </div>
               </div>
             ))}
+            {isSending && (
+              <div className="flex justify-start">
+                <div className="flex items-center gap-1.5 rounded-2xl rounded-tl-sm border border-white/10 bg-white px-4 py-3 text-ink shadow">
+                  <span className="h-2 w-2 animate-bounce rounded-full bg-coral [animation-delay:-0.3s]" />
+                  <span className="h-2 w-2 animate-bounce rounded-full bg-coral [animation-delay:-0.15s]" />
+                  <span className="h-2 w-2 animate-bounce rounded-full bg-coral" />
+                </div>
+              </div>
+            )}
           </div>
 
           <div className="grid grid-cols-2 gap-2 border-t border-white/10 p-3">
