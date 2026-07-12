@@ -1025,10 +1025,9 @@ export function TailoredSolutionsSection() {
   return (
     <section className="bg-ink py-20 text-white md:py-28">
       <div className="container-x">
-        <h2 className="font-display text-center leading-[1.14] tracking-normal">
-          <span className="block text-4xl text-coral md:text-6xl">MỘT GIẢI PHÁP</span>
-          <span className="mt-3 block text-4xl text-white md:text-6xl lg:text-7xl">
-            ĐƯỢC THIẾT KẾ RIÊNG CHO BẠN
+        <h2 className="font-display text-center leading-[1.14] tracking-normal text-balance">
+          <span className="block text-4xl text-white md:text-6xl lg:text-7xl">
+            <span className="text-coral">MỘT GIẢI PHÁP</span> ĐƯỢC THIẾT KẾ RIÊNG CHO BẠN
           </span>
           <span className="mt-3 block text-4xl text-white md:text-6xl lg:text-7xl">
             DÙ NHU CẦU CỦA BẠN LÀ GÌ
