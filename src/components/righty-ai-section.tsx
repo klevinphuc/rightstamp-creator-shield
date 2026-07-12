@@ -193,12 +193,14 @@ export function RightyAssistantWidget() {
             <input
               value={input}
               onChange={(event) => setInput(event.target.value)}
-              className="min-w-0 flex-1 rounded-xl border border-white/12 bg-white px-4 py-3 text-sm text-ink outline-none focus:border-coral focus:ring-2 focus:ring-coral/25"
+              disabled={isSending}
+              className="min-w-0 flex-1 rounded-xl border border-white/12 bg-white px-4 py-3 text-sm text-ink outline-none focus:border-coral focus:ring-2 focus:ring-coral/25 disabled:opacity-60"
               placeholder="Hỏi Righty..."
             />
             <button
               type="submit"
-              className="grid h-12 w-12 shrink-0 place-items-center rounded-xl bg-coral text-white transition-colors hover:bg-maroon"
+              disabled={isSending}
+              className="grid h-12 w-12 shrink-0 place-items-center rounded-xl bg-coral text-white transition-colors hover:bg-maroon disabled:cursor-not-allowed disabled:opacity-60"
               aria-label="Gửi câu hỏi"
             >
               <Send size={18} />
