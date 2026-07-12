@@ -57,6 +57,7 @@ type ArtworkState = {
   fileType: string;
   fileSize: number;
   previewUrl: string;
+  previewDataUrl: string;
   isImage: boolean;
   title: string;
   author: string;
@@ -77,12 +78,28 @@ type FingerprintState = {
 type ModuleId = "upload" | "fingerprint" | "watermark" | "certificate" | "verify" | "evidence";
 
 type WatermarkPosition = "top-left" | "top-right" | "center" | "bottom-left" | "bottom-right";
+type WatermarkMode = "text" | "seal" | "both";
+
+type WorkspaceDraft = {
+  active: ModuleId;
+  artwork: ArtworkState;
+  fingerprint: FingerprintState | null;
+  watermark: {
+    opacity: number;
+    position: WatermarkPosition;
+    mode: WatermarkMode;
+    text: string;
+  };
+};
+
+const WORKSPACE_DRAFT_KEY = "rightstamp_workspace_draft_v1";
 
 const initialArtwork: ArtworkState = {
   fileName: "",
   fileType: "",
   fileSize: 0,
   previewUrl: "",
+  previewDataUrl: "",
   isImage: false,
   title: "",
   author: "",
@@ -220,7 +237,7 @@ export function AuthModal({
           </button>
         </div>
 
-        <div className="grid grid-cols-2 border-b border-border bg-cream/50 p-1">
+        <div className="grid grid-cols-2 border-b border-border bg-[#FAFAFA] p-1">
           <button
             type="button"
             onClick={() => onModeChange("login")}
@@ -294,7 +311,7 @@ export function AuthModal({
                   Quên mật khẩu?
                 </button>
               </div>
-              {notice && <p className="rounded-lg bg-cream p-3 text-xs text-ink">{notice}</p>}
+              {notice && <p className="rounded-lg bg-[#FAFAFA] p-3 text-xs text-ink">{notice}</p>}
               {errors.form && (
                 <p className="rounded-lg bg-red-50 p-3 text-xs text-red-700">{errors.form}</p>
               )}
@@ -443,7 +460,7 @@ export function UserAccountMenu({ user, onLogout }: { user: AuthUser; onLogout: 
           <a
             href="#gioi-thieu"
             onClick={() => setOpen(false)}
-            className="flex items-center gap-2 px-3 py-2.5 text-sm text-ink hover:bg-cream"
+            className="flex items-center gap-2 px-3 py-2.5 text-sm text-ink hover:bg-[#FAFAFA]"
           >
             <User size={16} />
             Hồ sơ của tôi
@@ -451,7 +468,7 @@ export function UserAccountMenu({ user, onLogout }: { user: AuthUser; onLogout: 
           <a
             href="#tinh-nang-noi-bat"
             onClick={() => setOpen(false)}
-            className="flex items-center gap-2 px-3 py-2.5 text-sm text-ink hover:bg-cream"
+            className="flex items-center gap-2 px-3 py-2.5 text-sm text-ink hover:bg-[#FAFAFA]"
           >
             <FolderArchive size={16} />
             Tác phẩm của tôi
@@ -462,7 +479,7 @@ export function UserAccountMenu({ user, onLogout }: { user: AuthUser; onLogout: 
               setOpen(false);
               onLogout();
             }}
-            className="flex w-full items-center gap-2 border-t border-border px-3 py-2.5 text-left text-sm font-semibold text-maroon hover:bg-cream"
+            className="flex w-full items-center gap-2 border-t border-border px-3 py-2.5 text-left text-sm font-semibold text-maroon hover:bg-[#FAFAFA]"
           >
             <LogOut size={16} />
             Đăng xuất
@@ -487,8 +504,10 @@ export function InteractiveFeaturesSection({
   const [isGenerating, setIsGenerating] = useState(false);
   const [statusMessage, setStatusMessage] = useState("");
   const [verifyOpen, setVerifyOpen] = useState(false);
+  const [draftReady, setDraftReady] = useState(false);
   const [watermarkOpacity, setWatermarkOpacity] = useState(0.35);
   const [watermarkPosition, setWatermarkPosition] = useState<WatermarkPosition>("bottom-right");
+  const [watermarkMode, setWatermarkMode] = useState<WatermarkMode>("seal");
   const [watermarkText, setWatermarkText] = useState("");
   const [watermarkedUrl, setWatermarkedUrl] = useState("");
   const certificateRef = useRef<HTMLDivElement>(null);
@@ -506,6 +525,26 @@ export function InteractiveFeaturesSection({
       ] satisfies Array<{ id: ModuleId; icon: LucideIcon; label: string }>,
     [],
   );
+
+  useEffect(() => {
+    const draft = readWorkspaceDraft();
+    if (draft?.artwork) {
+      const previewUrl = draft.artwork.previewDataUrl || "";
+      setActive(draft.active || "upload");
+      setArtwork({
+        ...initialArtwork,
+        ...draft.artwork,
+        previewUrl,
+        isImage: draft.artwork.isImage || (draft.artwork.fileType || "").startsWith("image/"),
+      });
+      setFingerprint(draft.fingerprint ?? null);
+      setWatermarkOpacity(draft.watermark?.opacity ?? 0.35);
+      setWatermarkPosition(draft.watermark?.position ?? "bottom-right");
+      setWatermarkMode(draft.watermark?.mode ?? "seal");
+      setWatermarkText(draft.watermark?.text ?? "");
+    }
+    setDraftReady(true);
+  }, []);
 
   useEffect(() => {
     return () => {
@@ -528,8 +567,15 @@ export function InteractiveFeaturesSection({
       return;
     }
 
+    let cancelled = false;
     const image = new Image();
-    image.onload = () => {
+    const seal = new Image();
+
+    function renderWatermark() {
+      if (cancelled || !image.complete) return;
+      const shouldDrawSeal = watermarkMode === "seal" || watermarkMode === "both";
+      if (shouldDrawSeal && !seal.complete) return;
+
       const canvas = document.createElement("canvas");
       const width = image.naturalWidth || image.width;
       const height = image.naturalHeight || image.height;
@@ -544,39 +590,85 @@ export function InteractiveFeaturesSection({
       const fontSize = Math.max(24, Math.round(width * 0.045));
       const padding = Math.max(32, Math.round(width * 0.05));
       const { x, y } = getWatermarkPoint(watermarkPosition, width, height, padding);
+      const shouldDrawText = watermarkMode === "text" || watermarkMode === "both";
 
-      context.save();
-      context.globalAlpha = watermarkOpacity;
-      context.translate(x, y);
-      context.rotate(-Math.PI / 8);
-      context.font = `700 ${fontSize}px Be Vietnam Pro, Arial, sans-serif`;
-      context.textAlign = "center";
-      context.textBaseline = "middle";
-      context.shadowColor = "rgba(0,0,0,0.45)";
-      context.shadowBlur = 12;
-      context.fillStyle = "#ffffff";
-      context.fillText(text, 0, 0);
-      context.restore();
+      if (shouldDrawText) {
+        context.save();
+        context.globalAlpha = watermarkOpacity;
+        context.translate(
+          watermarkMode === "both" ? width / 2 : x,
+          watermarkMode === "both" ? height / 2 : y,
+        );
+        context.rotate(-Math.PI / 8);
+        context.font = `700 ${fontSize}px Be Vietnam Pro, Arial, sans-serif`;
+        context.textAlign = "center";
+        context.textBaseline = "middle";
+        context.shadowColor = "rgba(0,0,0,0.45)";
+        context.shadowBlur = 12;
+        context.fillStyle = "#ffffff";
+        context.fillText(text, 0, 0);
+        context.restore();
+      }
 
-      context.save();
-      context.globalAlpha = Math.min(0.95, watermarkOpacity + 0.25);
-      context.fillStyle = "#8B1E1E";
-      context.fillRect(width - padding - 148, height - padding - 42, 148, 42);
-      context.fillStyle = "#ffffff";
-      context.font = `700 ${Math.max(14, Math.round(fontSize * 0.42))}px Be Vietnam Pro, Arial, sans-serif`;
-      context.textAlign = "center";
-      context.textBaseline = "middle";
-      context.fillText("RIGHTSTAMP VERIFIED", width - padding - 74, height - padding - 21);
-      context.restore();
+      if (shouldDrawSeal) {
+        const sealWidth = Math.round(width * 0.18);
+        const sealHeight = Math.round(
+          sealWidth * ((seal.naturalHeight || seal.height) / (seal.naturalWidth || seal.width)),
+        );
+        context.save();
+        context.globalAlpha = Math.min(0.5, Math.max(0.25, watermarkOpacity));
+        context.translate(x, y);
+        context.rotate(-Math.PI / 18);
+        context.shadowColor = "rgba(139, 30, 30, 0.22)";
+        context.shadowBlur = Math.max(8, Math.round(width * 0.012));
+        context.drawImage(seal, -sealWidth / 2, -sealHeight / 2, sealWidth, sealHeight);
+        context.restore();
+      }
 
       setWatermarkedUrl(canvas.toDataURL("image/png"));
-    };
+    }
+
+    image.onload = renderWatermark;
+    seal.onload = renderWatermark;
+    seal.src = "/images/rightstamp-seal.png";
     image.src = artwork.previewUrl;
+
+    return () => {
+      cancelled = true;
+    };
   }, [
     artwork.author,
     artwork.isImage,
     artwork.previewUrl,
     user?.name,
+    watermarkMode,
+    watermarkOpacity,
+    watermarkPosition,
+    watermarkText,
+  ]);
+
+  useEffect(() => {
+    if (!draftReady) return;
+    saveWorkspaceDraft({
+      active,
+      artwork: {
+        ...artwork,
+        previewUrl: artwork.previewDataUrl,
+      },
+      fingerprint,
+      watermark: {
+        opacity: watermarkOpacity,
+        position: watermarkPosition,
+        mode: watermarkMode,
+        text: watermarkText,
+      },
+    });
+  }, [
+    active,
+    artwork,
+    draftReady,
+    fingerprint,
+    watermarkMode,
     watermarkOpacity,
     watermarkPosition,
     watermarkText,
@@ -590,6 +682,7 @@ export function InteractiveFeaturesSection({
         fileName: artwork.fileName,
         fileType: artwork.fileType,
         fileSize: artwork.fileSize,
+        previewDataUrl: artwork.previewDataUrl,
         title: artwork.title,
         author: artwork.author,
         owner: artwork.owner,
@@ -602,11 +695,15 @@ export function InteractiveFeaturesSection({
             id: fingerprint.id,
             hash: fingerprint.hash,
             timestamp: fingerprint.timestamp,
+            qrDataUrl: fingerprint.qrDataUrl,
             verifyUrl: fingerprint.verifyUrl,
           }
         : null,
     });
-  }, [artwork, fingerprint]);
+    if (fingerprint && user) {
+      saveWorkSnapshot(user, artwork, fingerprint);
+    }
+  }, [artwork, fingerprint, user]);
 
   const canContinueUpload = Boolean(
     artwork.fileName && artwork.title && artwork.author && artwork.owner,
@@ -636,6 +733,7 @@ export function InteractiveFeaturesSection({
     const previewUrl = URL.createObjectURL(file);
     previewUrlRef.current = previewUrl;
     const titleFromFile = file.name.replace(/\.[^/.]+$/, "");
+    const isImage = file.type.startsWith("image/");
 
     setArtwork((current) => ({
       ...current,
@@ -643,11 +741,19 @@ export function InteractiveFeaturesSection({
       fileType: file.type || "application/octet-stream",
       fileSize: file.size,
       previewUrl,
-      isImage: file.type.startsWith("image/"),
+      previewDataUrl: "",
+      isImage,
       title: current.title || titleFromFile,
       author: current.author || user?.name || "",
       owner: current.owner || user?.name || "",
     }));
+    if (isImage) {
+      void createImagePreviewDataUrl(file).then((value) => {
+        setArtwork((current) =>
+          current.fileName === file.name ? { ...current, previewDataUrl: value } : current,
+        );
+      });
+    }
     setFingerprint(null);
     setWatermarkedUrl("");
     setStatusMessage("Đã nhận file. Bạn có thể hoàn thiện metadata rồi chuyển sang bước tạo mã.");
@@ -746,6 +852,7 @@ export function InteractiveFeaturesSection({
       fingerprint,
       watermark: {
         generated: Boolean(watermarkedUrl),
+        mode: watermarkMode,
         opacity: watermarkOpacity,
         position: watermarkPosition,
         text: watermarkText.trim() || `© ${artwork.author || "RightStamp"}`,
@@ -760,8 +867,9 @@ export function InteractiveFeaturesSection({
   }
 
   return (
-    <section id="tinh-nang-noi-bat" className="bg-cream py-20 md:py-28">
+    <section id="tinh-nang-noi-bat" className="bg-white py-20 md:py-28">
       <div className="container-x">
+        <div className="rightstamp-red-divider mb-12" />
         <div className="mx-auto max-w-2xl text-center">
           <p className="text-sm font-bold uppercase tracking-widest text-maroon">
             6 Module cốt lõi
@@ -852,9 +960,11 @@ export function InteractiveFeaturesSection({
                 <WatermarkModule
                   artwork={artwork}
                   watermarkedUrl={watermarkedUrl}
+                  mode={watermarkMode}
                   opacity={watermarkOpacity}
                   position={watermarkPosition}
                   text={watermarkText}
+                  onModeChange={setWatermarkMode}
                   onOpacityChange={setWatermarkOpacity}
                   onPositionChange={setWatermarkPosition}
                   onTextChange={setWatermarkText}
@@ -886,7 +996,7 @@ export function InteractiveFeaturesSection({
               )}
             </div>
 
-            <div className="border-t border-border bg-gradient-to-br from-maroon/5 via-cream to-coral/10 p-6 lg:border-l lg:border-t-0">
+            <div className="border-t border-border bg-gradient-to-br from-maroon/5 via-white to-coral/10 p-6 lg:border-l lg:border-t-0">
               <LiveSummary
                 artwork={artwork}
                 fingerprint={fingerprint}
@@ -1027,7 +1137,7 @@ function UploadModule({
             onRequireAuth();
           }
         }}
-        className="block cursor-pointer rounded-2xl border-2 border-dashed border-maroon/35 bg-cream/60 p-6 text-center transition-colors hover:border-maroon hover:bg-cream"
+        className="block cursor-pointer rounded-2xl border-2 border-dashed border-maroon/35 bg-[#FAFAFA] p-6 text-center transition-colors hover:border-maroon hover:bg-white"
       >
         <input
           type="file"
@@ -1147,7 +1257,7 @@ function FingerprintModule({
         </p>
       </div>
 
-      <div className="rounded-2xl border border-border bg-cream/60 p-5">
+      <div className="rounded-2xl border border-border bg-[#FAFAFA] p-5">
         <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
           Tác phẩm đang xử lý
         </p>
@@ -1205,18 +1315,22 @@ function FingerprintModule({
 function WatermarkModule({
   artwork,
   watermarkedUrl,
+  mode,
   opacity,
   position,
   text,
+  onModeChange,
   onOpacityChange,
   onPositionChange,
   onTextChange,
 }: {
   artwork: ArtworkState;
   watermarkedUrl: string;
+  mode: WatermarkMode;
   opacity: number;
   position: WatermarkPosition;
   text: string;
+  onModeChange: (value: WatermarkMode) => void;
   onOpacityChange: (value: number) => void;
   onPositionChange: (value: WatermarkPosition) => void;
   onTextChange: (value: string) => void;
@@ -1244,6 +1358,29 @@ function WatermarkModule({
         />
       ) : (
         <>
+          <div>
+            <p className={labelClass}>Kiểu watermark</p>
+            <div className="mt-2 grid grid-cols-1 gap-2 sm:grid-cols-3">
+              {[
+                ["text", "Watermark chữ"],
+                ["seal", "Con dấu RightStamp"],
+                ["both", "Dùng cả hai"],
+              ].map(([value, label]) => (
+                <button
+                  key={value}
+                  type="button"
+                  onClick={() => onModeChange(value as WatermarkMode)}
+                  className={`rounded-lg border px-3 py-2.5 text-sm font-bold transition-colors ${
+                    mode === value
+                      ? "border-maroon bg-maroon text-white"
+                      : "border-border bg-white text-ink hover:border-maroon/50"
+                  }`}
+                >
+                  {label}
+                </button>
+              ))}
+            </div>
+          </div>
           <div className="grid grid-cols-1 gap-4 md:grid-cols-[1fr_180px]">
             <FormField label="Text watermark">
               <input
@@ -1251,6 +1388,7 @@ function WatermarkModule({
                 onChange={(event) => onTextChange(event.target.value)}
                 className={inputClass}
                 placeholder={`© ${artwork.author || "Tên tác giả"}`}
+                disabled={mode === "seal"}
               />
             </FormField>
             <FormField label={`Độ mờ ${Math.round(opacity * 100)}%`}>
@@ -1819,7 +1957,7 @@ function ImageCompare({ title, src }: { title: string; src: string }) {
       <div className="border-b border-border px-3 py-2 text-xs font-bold uppercase tracking-widest text-muted-foreground">
         {title}
       </div>
-      <div className="aspect-square bg-cream">
+      <div className="aspect-square bg-[#FAFAFA]">
         {src ? (
           <img src={src} alt={title} className="h-full w-full object-contain" />
         ) : (
@@ -1846,7 +1984,7 @@ function EmptyState({
   onAction?: () => void;
 }) {
   return (
-    <div className="rounded-2xl border border-dashed border-maroon/30 bg-cream/60 p-8 text-center">
+    <div className="rounded-2xl border border-dashed border-maroon/30 bg-[#FAFAFA] p-8 text-center">
       <div className="mx-auto grid h-14 w-14 place-items-center rounded-full bg-white text-maroon">
         <Icon size={28} />
       </div>
@@ -1912,12 +2050,65 @@ function getEvidenceChecklist(
   ];
 }
 
+function readWorkspaceDraft(): WorkspaceDraft | null {
+  if (typeof window === "undefined") return null;
+  try {
+    const raw = window.localStorage.getItem(WORKSPACE_DRAFT_KEY);
+    return raw ? (JSON.parse(raw) as WorkspaceDraft) : null;
+  } catch {
+    return null;
+  }
+}
+
+function saveWorkspaceDraft(draft: WorkspaceDraft) {
+  if (typeof window === "undefined") return;
+  try {
+    window.localStorage.setItem(WORKSPACE_DRAFT_KEY, JSON.stringify(draft));
+  } catch {
+    // localStorage can be full if users upload very large images. The flow still works in memory.
+  }
+}
+
 function fileIconForType(type: string): LucideIcon {
   if (type.startsWith("image/")) return FileImage;
   if (type.startsWith("video/")) return FileVideo;
   if (type.startsWith("audio/")) return FileAudio;
   if (type.includes("pdf") || type.includes("document")) return FileText;
   return FileIcon;
+}
+
+function createImagePreviewDataUrl(file: File, maxEdge = 900) {
+  return new Promise<string>((resolve) => {
+    const reader = new FileReader();
+    reader.onload = () => {
+      const raw = typeof reader.result === "string" ? reader.result : "";
+      if (!raw) {
+        resolve("");
+        return;
+      }
+
+      const image = new Image();
+      image.onload = () => {
+        const ratio = Math.min(1, maxEdge / Math.max(image.naturalWidth, image.naturalHeight));
+        const width = Math.max(1, Math.round(image.naturalWidth * ratio));
+        const height = Math.max(1, Math.round(image.naturalHeight * ratio));
+        const canvas = document.createElement("canvas");
+        canvas.width = width;
+        canvas.height = height;
+        const context = canvas.getContext("2d");
+        if (!context) {
+          resolve(raw);
+          return;
+        }
+        context.drawImage(image, 0, 0, width, height);
+        resolve(canvas.toDataURL("image/jpeg", 0.86));
+      };
+      image.onerror = () => resolve(raw);
+      image.src = raw;
+    };
+    reader.onerror = () => resolve("");
+    reader.readAsDataURL(file);
+  });
 }
 
 async function createSha256(value: string) {

@@ -9,8 +9,26 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as TinhNangRouteImport } from './routes/tinh-nang'
+import { Route as BlogRouteImport } from './routes/blog'
+import { Route as BangGiaRouteImport } from './routes/bang-gia'
 import { Route as IndexRouteImport } from './routes/index'
 
+const TinhNangRoute = TinhNangRouteImport.update({
+  id: '/tinh-nang',
+  path: '/tinh-nang',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BlogRoute = BlogRouteImport.update({
+  id: '/blog',
+  path: '/blog',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BangGiaRoute = BangGiaRouteImport.update({
+  id: '/bang-gia',
+  path: '/bang-gia',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -19,28 +37,61 @@ const IndexRoute = IndexRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/bang-gia': typeof BangGiaRoute
+  '/blog': typeof BlogRoute
+  '/tinh-nang': typeof TinhNangRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/bang-gia': typeof BangGiaRoute
+  '/blog': typeof BlogRoute
+  '/tinh-nang': typeof TinhNangRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/bang-gia': typeof BangGiaRoute
+  '/blog': typeof BlogRoute
+  '/tinh-nang': typeof TinhNangRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths: '/' | '/bang-gia' | '/blog' | '/tinh-nang'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to: '/' | '/bang-gia' | '/blog' | '/tinh-nang'
+  id: '__root__' | '/' | '/bang-gia' | '/blog' | '/tinh-nang'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  BangGiaRoute: typeof BangGiaRoute
+  BlogRoute: typeof BlogRoute
+  TinhNangRoute: typeof TinhNangRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/tinh-nang': {
+      id: '/tinh-nang'
+      path: '/tinh-nang'
+      fullPath: '/tinh-nang'
+      preLoaderRoute: typeof TinhNangRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/blog': {
+      id: '/blog'
+      path: '/blog'
+      fullPath: '/blog'
+      preLoaderRoute: typeof BlogRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/bang-gia': {
+      id: '/bang-gia'
+      path: '/bang-gia'
+      fullPath: '/bang-gia'
+      preLoaderRoute: typeof BangGiaRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -53,6 +104,9 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  BangGiaRoute: BangGiaRoute,
+  BlogRoute: BlogRoute,
+  TinhNangRoute: TinhNangRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

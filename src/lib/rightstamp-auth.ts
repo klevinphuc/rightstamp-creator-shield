@@ -22,6 +22,7 @@ export type RightStampWorkContext = {
     fileName?: string;
     fileType?: string;
     fileSize?: number;
+    previewDataUrl?: string;
     title?: string;
     author?: string;
     owner?: string;
@@ -33,8 +34,19 @@ export type RightStampWorkContext = {
     id: string;
     hash: string;
     timestamp: string;
+    qrDataUrl?: string;
     verifyUrl: string;
   } | null;
+};
+
+export type RightStampStoredWork = {
+  id: string;
+  userEmail?: string;
+  savedAt: string;
+  artwork: RightStampWorkContext["artwork"] & {
+    previewUrl?: string;
+  };
+  fingerprint: NonNullable<RightStampWorkContext["fingerprint"]>;
 };
 
 export function readRightStampSession(): AuthUser | null {
@@ -86,6 +98,7 @@ export function saveWorkSnapshot(
     fileName: string;
     fileType: string;
     fileSize: number;
+    previewDataUrl?: string;
     title: string;
     author: string;
     owner: string;
@@ -114,6 +127,7 @@ export function saveWorkSnapshot(
     ...current.filter((item) => item.id !== fingerprint.id),
   ].slice(0, 20);
   window.localStorage.setItem(WORKS_KEY, JSON.stringify(next));
+  window.dispatchEvent(new Event("rightstamp:works-updated"));
 }
 
 export function saveRightStampCurrentWork(context: RightStampWorkContext) {
@@ -141,6 +155,11 @@ export function readRightStampCurrentWork(): RightStampWorkContext | null {
     artwork: latest.artwork,
     fingerprint: latest.fingerprint ?? null,
   };
+}
+
+export function readRightStampStoredWorks(): RightStampStoredWork[] {
+  if (typeof window === "undefined") return [];
+  return readStorage<RightStampStoredWork[]>(window.localStorage, WORKS_KEY) ?? [];
 }
 
 function readStorage<T>(storage: Storage, key: string): T | null {

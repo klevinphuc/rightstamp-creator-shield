@@ -190,6 +190,11 @@
   animation: rightstamp-light-streak 7s ease-in-out infinite;
 }
 
+.rightstamp-red-divider {
+  width: 100%;
+  border-top: 2px solid #8b1e1e;
+}
+
 @keyframes righty-mascot-jump {
   0%,
   100% {
