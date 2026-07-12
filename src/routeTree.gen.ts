@@ -13,6 +13,7 @@ import { Route as TinhNangRouteImport } from './routes/tinh-nang'
 import { Route as BlogRouteImport } from './routes/blog'
 import { Route as BangGiaRouteImport } from './routes/bang-gia'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ApiRightyRouteImport } from './routes/api/righty'
 
 const TinhNangRoute = TinhNangRouteImport.update({
   id: '/tinh-nang',
@@ -34,18 +35,25 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiRightyRoute = ApiRightyRouteImport.update({
+  id: '/api/righty',
+  path: '/api/righty',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/bang-gia': typeof BangGiaRoute
   '/blog': typeof BlogRoute
   '/tinh-nang': typeof TinhNangRoute
+  '/api/righty': typeof ApiRightyRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/bang-gia': typeof BangGiaRoute
   '/blog': typeof BlogRoute
   '/tinh-nang': typeof TinhNangRoute
+  '/api/righty': typeof ApiRightyRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -53,13 +61,14 @@ export interface FileRoutesById {
   '/bang-gia': typeof BangGiaRoute
   '/blog': typeof BlogRoute
   '/tinh-nang': typeof TinhNangRoute
+  '/api/righty': typeof ApiRightyRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/bang-gia' | '/blog' | '/tinh-nang'
+  fullPaths: '/' | '/bang-gia' | '/blog' | '/tinh-nang' | '/api/righty'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/bang-gia' | '/blog' | '/tinh-nang'
-  id: '__root__' | '/' | '/bang-gia' | '/blog' | '/tinh-nang'
+  to: '/' | '/bang-gia' | '/blog' | '/tinh-nang' | '/api/righty'
+  id: '__root__' | '/' | '/bang-gia' | '/blog' | '/tinh-nang' | '/api/righty'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -67,6 +76,7 @@ export interface RootRouteChildren {
   BangGiaRoute: typeof BangGiaRoute
   BlogRoute: typeof BlogRoute
   TinhNangRoute: typeof TinhNangRoute
+  ApiRightyRoute: typeof ApiRightyRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -99,6 +109,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/righty': {
+      id: '/api/righty'
+      path: '/api/righty'
+      fullPath: '/api/righty'
+      preLoaderRoute: typeof ApiRightyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -107,6 +124,7 @@ const rootRouteChildren: RootRouteChildren = {
   BangGiaRoute: BangGiaRoute,
   BlogRoute: BlogRoute,
   TinhNangRoute: TinhNangRoute,
+  ApiRightyRoute: ApiRightyRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

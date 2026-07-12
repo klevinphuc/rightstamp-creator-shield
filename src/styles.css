@@ -295,10 +295,10 @@
 
 .righty-eye {
   position: absolute;
-  top: 31%;
+  top: 31.5%;
   z-index: 30;
-  width: 17%;
-  height: 7%;
+  width: 14%;
+  height: 5.5%;
   border-radius: 999px;
   background: linear-gradient(180deg, rgb(246 255 255 / 0.95), rgb(199 236 235 / 0.96));
   box-shadow: 0 1px 8px rgb(103 255 246 / 0.25);
@@ -308,11 +308,11 @@
 }
 
 .righty-eye-left {
-  left: 30%;
+  left: 33%;
 }
 
 .righty-eye-right {
-  right: 27%;
+  right: 30%;
 }
 
 .righty-digital-ring {
