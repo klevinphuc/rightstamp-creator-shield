@@ -1,4 +1,4 @@
-import RightyChatWidget from "../components/RightyChatWidget"; 
+import FloatingRightyMascot from "../components/FloatingRightyMascot"; 
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import {
   Outlet,
@@ -149,8 +149,8 @@ function RootComponent() {
       {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
       <Outlet />
       
-      {/* Trợ lý ảo Righty (5 bước hành động, cố định góc dưới bên trái toàn sàn) */}
-      <RightyChatWidget />
+      {/* ĐÃ SỬA: Gọi chính xác component FloatingRightyMascot để render các file GIF lơ lửng liên tục */}
+      <FloatingRightyMascot />
     </QueryClientProvider>
   );
 }
