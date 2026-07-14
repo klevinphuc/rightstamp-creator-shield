@@ -12,7 +12,7 @@ export default function Mascot() {
       {/* Khung chứa Linh Vật */}
       <div className="w-24 h-24 md:w-28 md:h-28 flex items-center justify-center bg-transparent">
         <img
-          src="/righty-scan.gif" // Gọi file GIF trong suốt của bạn
+          src="/righty-scan.gif"
           alt="Righty Mascot"
           className="w-full h-full object-contain"
         />
