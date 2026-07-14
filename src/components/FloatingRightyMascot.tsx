@@ -5,35 +5,44 @@ interface ActionStep {
   id: number;
   message: string;
   gifUrl: string;
+  fallbackGifUrl: string;
 }
 
-const publicAsset = (fileName: string) => `${import.meta.env.BASE_URL}${fileName}`;
+const publicAsset = (path: string) => `${import.meta.env.BASE_URL}${path}`;
+
+const githubAsset = (fileName: string) =>
+  `https://raw.githubusercontent.com/klevinphuc/rightstamp-creator-shield/main/public/gifs/${fileName}`;
 
 const actionSteps: ActionStep[] = [
   {
     id: 1,
     message: 'Đã xác thực – bằng chứng rõ ràng.',
-    gifUrl: publicAsset('01_verified.gif'),
+    gifUrl: publicAsset('gifs/01_verified.gif'),
+    fallbackGifUrl: githubAsset('01_verified.gif'),
   },
   {
     id: 2,
     message: 'Tự do sáng tạo, RightStamp bảo vệ bạn.',
-    gifUrl: publicAsset('02_creativity.gif'),
+    gifUrl: publicAsset('gifs/02_creativity.gif'),
+    fallbackGifUrl: githubAsset('02_creativity.gif'),
   },
   {
     id: 3,
     message: 'Quét QR – minh bạch chủ sở hữu.',
-    gifUrl: publicAsset('03_qr_scan.gif'),
+    gifUrl: publicAsset('gifs/03_qr_scan.gif'),
+    fallbackGifUrl: githubAsset('03_qr_scan.gif'),
   },
   {
     id: 4,
     message: 'Lá chắn vững chắc chống đạo nhái.',
-    gifUrl: publicAsset('04_protector.gif'),
+    gifUrl: publicAsset('gifs/04_protector.gif'),
+    fallbackGifUrl: githubAsset('04_protector.gif'),
   },
   {
     id: 5,
     message: 'RightStamp – Đồng hành cùng tác phẩm của bạn.',
-    gifUrl: publicAsset('05_trust.gif'),
+    gifUrl: publicAsset('gifs/05_trust.gif'),
+    fallbackGifUrl: githubAsset('05_trust.gif'),
   },
 ];
 
@@ -41,11 +50,11 @@ export default function FloatingRightyMascot() {
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
 
   useEffect(() => {
-    const interval = setInterval(() => {
+    const interval = window.setInterval(() => {
       setCurrentStepIndex((prev) => (prev + 1) % actionSteps.length);
     }, 6000);
 
-    return () => clearInterval(interval);
+    return () => window.clearInterval(interval);
   }, []);
 
   const handleMascotClick = () => {
@@ -64,15 +73,28 @@ export default function FloatingRightyMascot() {
       <button
         type="button"
         onClick={handleMascotClick}
-        className="w-28 h-28 relative cursor-pointer hover:scale-110 active:scale-95 transition-transform duration-300 animate-float bg-transparent border-0 p-0"
+        className="relative w-28 h-28 cursor-pointer hover:scale-110 active:scale-95 transition-transform duration-300 animate-float bg-transparent border-0 p-0"
         title="Click để chuyển hành động!"
+        aria-label="Righty mascot"
       >
         <span className="absolute inset-0 rounded-full bg-teal-400/15 blur-xl pointer-events-none" />
 
         <img
+          key={currentStep.id}
           src={currentStep.gifUrl}
           alt="Righty Live Mascot"
-          className="block w-full h-full object-contain bg-transparent"
+          draggable={false}
+          className="relative z-10 block w-full h-full object-contain bg-transparent"
+          onError={(event) => {
+            const image = event.currentTarget;
+
+            if (image.dataset.fallbackApplied === 'true') {
+              return;
+            }
+
+            image.dataset.fallbackApplied = 'true';
+            image.src = currentStep.fallbackGifUrl;
+          }}
         />
       </button>
     </div>
