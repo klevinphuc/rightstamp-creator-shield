@@ -9,13 +9,15 @@ export default function Mascot() {
         Righty tư vấn miễn phí!
       </div>
 
-      {/* Khung chứa Linh Vật */}
+      {/* Khung chứa Video Mascot */}
       <div className="w-24 h-24 md:w-28 md:h-28 flex items-center justify-center bg-transparent">
-        {/* Dùng thẻ img cho file .webp sẽ hiển thị trong suốt hoàn hảo */}
-        <img
-          src="/righty-scan"
-          alt="Righty Mascot"
-          className="w-full h-full object-contain"
+        <video
+          src="/righty-scan" // Đã cập nhật lại thành righty-scan theo tên file của bạn
+          autoPlay
+          loop
+          muted
+          playsInline
+          className="w-full h-full object-contain" // Giữ nguyên tỷ lệ video, nền trong suốt xịn và mắt robot vẫn màu đen chuẩn chỉnh
         />
       </div>
     </div>
