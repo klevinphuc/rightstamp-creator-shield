@@ -148,18 +148,8 @@ function RootComponent() {
     <QueryClientProvider client={queryClient}>
       {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
       <Outlet />
-    </QueryClientProvider>
-  );
-}
-function RootComponent() {
-  const { queryClient } = Route.useRouteContext();
-
-  return (
-    <QueryClientProvider client={queryClient}>
-      {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
-      <Outlet />
       
-      {/* CHÈN LÍNH VẬT RIGHTY Ở ĐÂY */}
+      {/* Linh vật Righty động được chèn an toàn tại đây */}
       <Mascot />
     </QueryClientProvider>
   );
