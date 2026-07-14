@@ -1,4 +1,4 @@
-import Mascot from "../components/Mascot"; 
+import RightyChatWidget from "../components/RightyChatWidget"; 
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import {
   Outlet,
@@ -149,8 +149,8 @@ function RootComponent() {
       {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
       <Outlet />
       
-      {/* Linh vật Righty động được chèn an toàn tại đây */}
-      <Mascot />
+      {/* Trợ lý ảo Righty (5 bước hành động, cố định góc dưới bên trái toàn sàn) */}
+      <RightyChatWidget />
     </QueryClientProvider>
   );
 }
