@@ -4,63 +4,35 @@ import { useEffect, useState } from 'react';
 interface ActionStep {
   id: number;
   message: string;
-  gifUrl: string;
 }
 
-// ⚠️ ĐỒNG BỘ THỜI GIAN:
-// Đảm bảo số này khớp chính xác với tổng thời lượng thực tế của file GIF (tính bằng mili-giây).
-// Ví dụ: Nếu ảnh GIF của bạn chạy hết một vòng mất đúng 9.2 giây thì để 9200.
-// Nếu file GIF thực tế của bạn dài 9.0 giây thì bạn hãy sửa số này thành 9000 nhé!
+// Tổng thời lượng chạy hết 1 vòng của file GIF (9.2 giây = 9200ms)
 const TOTAL_GIF_DURATION = 9200; 
 
 const mascotGifUrl = '/gifs/rightyrighty-ezgif.com-remove-background%20%282%29.gif';
 
 const actionSteps: ActionStep[] = [
-  {
-    id: 1,
-    message: 'Đã xác thực – bằng chứng rõ ràng.',
-    gifUrl: mascotGifUrl,
-  },
-  {
-    id: 2,
-    message: 'Tự do sáng tạo, RightStamp bảo vệ bạn.',
-    gifUrl: mascotGifUrl,
-  },
-  {
-    id: 3,
-    message: 'Quét QR – minh bạch chủ sở hữu.',
-    gifUrl: mascotGifUrl,
-  },
-  {
-    id: 4,
-    message: 'Lá chắn vững chắc chống đạo nhái.',
-    gifUrl: mascotGifUrl,
-  },
-  {
-    id: 5,
-    message: 'RightStamp – Đồng hành cùng tác phẩm của bạn.',
-    gifUrl: mascotGifUrl,
-  },
+  { id: 1, message: 'Đã xác thực – bằng chứng rõ ràng.' },
+  { id: 2, message: 'Tự do sáng tạo, RightStamp bảo vệ bạn.' },
+  { id: 3, message: 'Quét QR – minh bạch chủ sở hữu.' },
+  { id: 4, message: 'Lá chắn vững chắc chống đạo nhái.' },
+  { id: 5, message: 'RightStamp – Đồng hành cùng tác phẩm của bạn.' },
 ];
 
 export default function FloatingRightyMascot() {
   const [startTime, setStartTime] = useState<number | null>(null);
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
-  const [gifKey, setGifKey] = useState<number>(Date.now()); // Dùng để reset GIF khi click
+  const [gifKey, setGifKey] = useState<number>(Date.now()); // Chỉ dùng để reset GIF khi click thủ công
 
   useEffect(() => {
-    // Nếu ảnh GIF chưa load xong, không chạy bộ đếm thời gian để tránh lệch nhịp
     if (startTime === null) return;
 
-    let animationFrameId: number;
-
-    const updateTimer = () => {
+    // Sử dụng bộ kiểm tra chu kỳ cứ mỗi 100ms để đảm bảo độ chính xác cực cao và mượt mà
+    const interval = setInterval(() => {
       const now = Date.now();
-      // Tính toán thời gian trôi qua trong vòng lặp của GIF (mili-giây)
       const elapsedMs = (now - startTime) % TOTAL_GIF_DURATION;
-      const elapsedSec = elapsedMs / 1000; // Đổi sang giây
+      const elapsedSec = elapsedMs / 1000;
 
-      // Phân chia khoảng thời gian hiển thị lời thoại khớp từng giây với GIF
       let activeIndex = 4; // Mặc định là Message 5 (từ 7.2 giây đến hết GIF)
       
       if (elapsedSec >= 0 && elapsedSec < 1.9) {
@@ -74,32 +46,32 @@ export default function FloatingRightyMascot() {
       }
 
       setCurrentStepIndex(activeIndex);
-      animationFrameId = requestAnimationFrame(updateTimer);
-    };
+    }, 100);
 
-    animationFrameId = requestAnimationFrame(updateTimer);
-    return () => cancelAnimationFrame(animationFrameId);
+    return () => clearInterval(interval);
   }, [startTime]);
 
-  // Sự kiện kích hoạt khi ảnh GIF thực sự load thành công trên trình duyệt
+  // Kích hoạt bộ đếm thời gian ngay khi ảnh GIF load thành công
   const handleImageLoad = () => {
-    setStartTime(Date.now());
+    if (startTime === null) {
+      setStartTime(Date.now());
+    }
   };
 
-  // Khi click vào chú mascot, reset lại key để tải lại ảnh và đặt startTime về null để chờ load xong mới đếm
+  // Reset thủ công khi click chuột vào chú mascot
   const handleMascotClick = () => {
     setGifKey(Date.now());
-    setStartTime(null); // Tạm ngắt bộ đếm thời gian
+    setStartTime(null); // Tạm dừng bộ đếm giây cho đến khi GIF mới được tải xong
     setCurrentStepIndex(0);
   };
 
   const currentStep = actionSteps[currentStepIndex];
 
   return (
-    /* Giữ nguyên vị trí kéo sát đáy mép trái (bottom-[-17px] left-0.5) */
+    /* Container tổng thể được kéo sát đáy và dịch trái theo đúng tỉ lệ bạn chọn */
     <div className="fixed bottom-[-17px] left-0.5 z-50 flex flex-col items-center select-none pointer-events-auto">
       
-      {/* Bong bóng lời thoại màu đỏ đậm và kéo thấp sát mascot (translate-y-[38px]) */}
+      {/* Bong bóng lời thoại màu đỏ đậm, ngắn gọn và kéo sát mascot xuống 2.5cm (translate-y-[38px]) */}
       <div className="mb-1 max-w-[170px] bg-[#800000]/95 text-white text-xs font-medium p-3 rounded-2xl border border-red-900/50 shadow-xl relative animate-in fade-in slide-in-from-bottom-2 duration-300 backdrop-blur-sm text-center transform translate-y-[38px] z-20">
         {currentStep.message}
         <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-2 h-2 bg-[#800000] rotate-45 border-r border-b border-red-900/50" />
@@ -115,12 +87,13 @@ export default function FloatingRightyMascot() {
         <span className="absolute inset-0 rounded-full bg-teal-400/15 blur-xl pointer-events-none" />
 
         <img
-          key={`${currentStep.id}-${gifKey}`}
-          src={`${currentStep.gifUrl}?v=${gifKey}`}
+          // ĐÃ SỬA: Key chỉ thay đổi khi click thủ công (gifKey), giúp ảnh không bị tải lại liên tục khi đổi text
+          key={gifKey}
+          src={`${mascotGifUrl}?v=${gifKey}`}
           alt="Righty Live Mascot"
           draggable={false}
           className="relative z-10 block w-full h-full object-contain bg-transparent"
-          onLoad={handleImageLoad} // Trọng tâm đồng bộ: Chờ ảnh load xong mới đếm giây
+          onLoad={handleImageLoad}
         />
       </button>
     </div>
