@@ -41,7 +41,7 @@ const actionSteps: ActionStep[] = [
   },
 ];
 
-function ChromaKeyVideo({
+function GreenScreenVideo({
   src,
   className,
 }: {
@@ -60,71 +60,74 @@ function ChromaKeyVideo({
     const context = canvas.getContext('2d', { willReadFrequently: true });
     if (!context) return;
 
-    let animationFrameId = 0;
-    let isRunning = true;
+    let frameId = 0;
+    let stopped = false;
 
-    const drawFrame = () => {
-      if (!isRunning || video.paused || video.ended) {
-        animationFrameId = window.requestAnimationFrame(drawFrame);
-        return;
-      }
+    const render = () => {
+      if (stopped) return;
 
-      const width = video.videoWidth || 512;
-      const height = video.videoHeight || 512;
+      if (video.readyState >= 2 && video.videoWidth > 0 && video.videoHeight > 0) {
+        const width = video.videoWidth;
+        const height = video.videoHeight;
 
-      if (canvas.width !== width) canvas.width = width;
-      if (canvas.height !== height) canvas.height = height;
+        if (canvas.width !== width) canvas.width = width;
+        if (canvas.height !== height) canvas.height = height;
 
-      context.clearRect(0, 0, width, height);
-      context.drawImage(video, 0, 0, width, height);
+        context.clearRect(0, 0, width, height);
+        context.drawImage(video, 0, 0, width, height);
 
-      const frame = context.getImageData(0, 0, width, height);
-      const pixels = frame.data;
+        const frame = context.getImageData(0, 0, width, height);
+        const data = frame.data;
 
-      for (let i = 0; i < pixels.length; i += 4) {
-        const red = pixels[i];
-        const green = pixels[i + 1];
-        const blue = pixels[i + 2];
+        for (let i = 0; i < data.length; i += 4) {
+          const r = data[i];
+          const g = data[i + 1];
+          const b = data[i + 2];
 
-        const strongestNonGreen = Math.max(red, blue);
-        const greenDominance = green - strongestNonGreen;
+          const maxOther = Math.max(r, b);
+          const greenDominance = g - maxOther;
 
-        if (green > 95 && greenDominance > 25) {
-          const removeAmount = Math.min(1, (greenDominance - 25) / 85);
-          pixels[i + 3] = Math.round(pixels[i + 3] * (1 - removeAmount));
+          if (g > 80 && greenDominance > 22) {
+            const alphaCut = Math.min(1, (greenDominance - 22) / 90);
+            data[i + 3] = Math.round(data[i + 3] * (1 - alphaCut));
+          }
+
+          if (data[i + 3] > 0 && g > r && g > b) {
+            data[i + 1] = Math.max(maxOther, g - greenDominance * 0.7);
+          }
         }
 
-        if (pixels[i + 3] > 0 && green > red && green > blue) {
-          pixels[i + 1] = Math.max(strongestNonGreen, green - greenDominance * 0.6);
-        }
+        context.putImageData(frame, 0, 0);
       }
 
-      context.putImageData(frame, 0, 0);
-      animationFrameId = window.requestAnimationFrame(drawFrame);
+      frameId = window.requestAnimationFrame(render);
     };
 
-    const startVideo = async () => {
+    const playVideo = async () => {
       try {
+        video.currentTime = video.currentTime || 0;
         await video.play();
       } catch {
-        // Browser may wait for user interaction. The canvas will start after play is allowed.
+        // Nếu browser chặn autoplay, video sẽ chạy sau khi user tương tác.
       }
 
-      drawFrame();
+      render();
     };
 
-    video.addEventListener('loadeddata', startVideo);
-    video.addEventListener('play', drawFrame);
+    video.addEventListener('loadedmetadata', playVideo);
+    video.addEventListener('loadeddata', playVideo);
+    video.addEventListener('play', render);
 
     if (video.readyState >= 2) {
-      startVideo();
+      playVideo();
     }
 
     return () => {
-      isRunning = false;
-      window.cancelAnimationFrame(animationFrameId);
-      video.removeEventListener('loadeddata', startVideo);
-      video.removeEventListener('play', drawFrame);
+      stopped = true;
+      window.cancelAnimationFrame(frameId);
+      video.removeEventListener('loadedmetadata', playVideo);
+      video.removeEventListener('loadeddata', playVideo);
+      video.removeEventListener('play', render);
     };
   }, [src]);
 
@@ -138,13 +141,18 @@ function ChromaKeyVideo({
         autoPlay
         playsInline
         preload="auto"
-        className="hidden"
+        aria-hidden="true"
+        style={{
+          position: 'absolute',
+          inset: 0,
+          width: '100%',
+          height: '100%',
+          opacity: 0,
+          pointerEvents: 'none',
+        }}
       />
 
-      <canvas
-        ref={canvasRef}
-        className={className}
-      />
+      <canvas ref={canvasRef} className={className} />
     </>
   );
 }
@@ -183,7 +191,7 @@ export default function FloatingRightyMascot() {
         <span className="absolute inset-0 rounded-full bg-teal-400/15 blur-xl pointer-events-none" />
 
         {currentStep.type === 'video' ? (
-          <ChromaKeyVideo
+          <GreenScreenVideo
             key={currentStep.id}
             src={currentStep.src}
             className="relative z-10 block w-full h-full object-contain bg-transparent"
