@@ -86,13 +86,13 @@ export default function FloatingRightyMascot() {
   const currentStep = actionSteps[currentStepIndex];
 
   return (
-    /* ĐÃ SỬA: Kéo vị trí tổng thể lên cao (bottom-[-66px] thành bottom-10) để hiển thị trọn vẹn 100% mascot */
-    <div className="fixed bottom-10 left-0.5 z-50 flex flex-col items-center select-none pointer-events-auto">
+    /* ĐÃ SỬA: Kéo vị trí tổng thể xuống thấp hơn 1.5 cm (khoảng 57px). Chuyển bottom-10 (40px) thành bottom-[-17px]. */
+    <div className="fixed bottom-[-17px] left-0.5 z-50 flex flex-col items-center select-none pointer-events-auto">
       
       {/* Bong bóng lời thoại xuất hiện trên đầu chú Mascot */}
-      {/* ĐÃ SỬA: Chuyển màu nền thành ĐỎ ĐẬM chuyên nghiệp (bg-[#800000]/95) */}
-      {/* ĐVÀ ĐÃ SỬA: Loại bỏ translate-y-[40px] để ô thoại đỏ nằm đúng vị trí ngay trên đầu chú mascot */}
-      <div className="mb-1 max-w-[170px] bg-[#800000]/95 text-white text-xs font-medium p-3 rounded-2xl border border-red-900/50 shadow-xl relative animate-in fade-in slide-in-from-bottom-2 duration-300 backdrop-blur-sm text-center z-20">
+      {/* Giữ nguyên màu nền ĐỎ ĐẬM (bg-[#800000]/95). */}
+      {/* ĐVÀ ĐÃ SỬA: Thêm translate-y-[38px] để kéo ô thoại đỏ thấp xuống thêm một chút so với chú mascot. */}
+      <div className="mb-1 max-w-[170px] bg-[#800000]/95 text-white text-xs font-medium p-3 rounded-2xl border border-red-900/50 shadow-xl relative animate-in fade-in slide-in-from-bottom-2 duration-300 backdrop-blur-sm text-center transform translate-y-[38px] z-20">
         {currentStep.message}
         {/* Mũi tên nhọn hướng xuống - đã đổi màu trùng với nền đỏ đậm */}
         <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-2 h-2 bg-[#800000] rotate-45 border-r border-b border-red-900/50" />
