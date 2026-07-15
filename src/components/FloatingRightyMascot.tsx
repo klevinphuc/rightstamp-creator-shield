@@ -57,23 +57,28 @@ export default function FloatingRightyMascot() {
   const currentStep = actionSteps[currentStepIndex];
 
   return (
-    /* ĐÃ SỬA: Dịch sát sang bên trái thêm (từ left-6 thành left-2) */
-    <div className="fixed bottom-6 left-2 z-50 flex flex-col items-center select-none pointer-events-auto">
+    /* Vị trí cố định Z-50 để luôn nổi trên cùng toàn sàn web */
+    /* ĐÃ SỬA: Chuyển vị trí từ bottom-6 (24px) xuống thấp hơn tầm 1,2cm (khoảng 45px) */
+    /* Giá trị mới là bottom-[-21px] (24px - 45px = -21px) để chú mascot cực kỳ sát đáy web */
+    <div className="fixed bottom-[-21px] left-0.5 z-50 flex flex-col items-center select-none pointer-events-auto">
       
-      {/* Bong bóng lời thoại nhỏ xuất hiện trên đầu chú Mascot */}
-      <div className="mb-3 max-w-[220px] bg-[#0a1e36]/95 text-white text-xs font-medium p-3 rounded-2xl border border-slate-700/50 shadow-xl relative animate-in fade-in slide-in-from-bottom-2 duration-300 backdrop-blur-sm text-center">
-        Chào bạn! {currentStep.message}
+      {/* Bong bóng lời thoại xuất hiện trên đầu chú Mascot */}
+      {/* Giữ nguyên max-width [170px] đã được thu ngắn và margin-bottom [mb-1] đã kéo thấp */}
+      <div className="mb-1 max-w-[170px] bg-[#0a1e36]/95 text-white text-xs font-medium p-3 rounded-2xl border border-slate-700/50 shadow-xl relative animate-in fade-in slide-in-from-bottom-2 duration-300 backdrop-blur-sm text-center">
+        {currentStep.message}
+        {/* Mũi tên nhọn chỉ xuống chú mascot */}
         <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-2 h-2 bg-[#0a1e36] rotate-45 border-r border-b border-slate-700/50" />
       </div>
 
       <button
         type="button"
         onClick={handleMascotClick}
-        /* ĐÃ SỬA: Phóng to kích thước từ 112px (w-28) lên 1.5 lần thành 168px (w-[168px]) */
+        /* Giữ nguyên kích thước 1.5x (168px) và hiệu ứng animate-float */
         className="relative w-[168px] h-[168px] cursor-pointer hover:scale-105 active:scale-95 transition-transform duration-300 animate-float bg-transparent border-0 p-0"
         title="Click để chuyển hành động!"
         aria-label="Righty mascot"
       >
+        {/* Hiệu ứng hào quang phát sáng nhẹ phía sau (có thể bị mép trình duyệt che một phần khi kéo xuống) */}
         <span className="absolute inset-0 rounded-full bg-teal-400/15 blur-xl pointer-events-none" />
 
         <img
