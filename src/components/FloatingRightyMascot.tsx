@@ -11,7 +11,7 @@ const actionSteps: ActionStep[] = [
   {
     id: 1,
     message: 'Đã xác thực – bằng chứng rõ ràng.',
-    gifUrl: '/gifs/01_verified.gif',
+    gifUrl: '/gifs/rightyrighty-ezgif.com-remove-background%20%282%29.gif',
   },
   {
     id: 2,
