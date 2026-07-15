@@ -11,7 +11,7 @@ const actionSteps: ActionStep[] = [
   {
     id: 1,
     message: 'Đã xác thực – bằng chứng rõ ràng.',
-    gifUrl: '/gifs/01_verified.gif',
+    gifUrl: '/gifs/01_verified.webp',
   },
   {
     id: 2,
