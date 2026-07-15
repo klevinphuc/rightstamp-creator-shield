@@ -5,44 +5,33 @@ interface ActionStep {
   id: number;
   message: string;
   gifUrl: string;
-  fallbackGifUrl: string;
 }
-
-const publicAsset = (path: string) => `${import.meta.env.BASE_URL}${path}`;
-
-const githubAsset = (fileName: string) =>
-  `https://raw.githubusercontent.com/klevinphuc/rightstamp-creator-shield/main/public/gifs/${fileName}`;
 
 const actionSteps: ActionStep[] = [
   {
     id: 1,
     message: 'Đã xác thực – bằng chứng rõ ràng.',
-    gifUrl: publicAsset('gifs/01_verified.gif'),
-    fallbackGifUrl: githubAsset('01_verified.gif'),
+    gifUrl: '/gifs/01_verified.gif',
   },
   {
     id: 2,
     message: 'Tự do sáng tạo, RightStamp bảo vệ bạn.',
-    gifUrl: publicAsset('gifs/02_creativity.gif'),
-    fallbackGifUrl: githubAsset('02_creativity.gif'),
+    gifUrl: '/gifs/02_creativity.gif',
   },
   {
     id: 3,
     message: 'Quét QR – minh bạch chủ sở hữu.',
-    gifUrl: publicAsset('gifs/03_qr_scan.gif'),
-    fallbackGifUrl: githubAsset('03_qr_scan.gif'),
+    gifUrl: '/gifs/03_qr_scan.gif',
   },
   {
     id: 4,
     message: 'Lá chắn vững chắc chống đạo nhái.',
-    gifUrl: publicAsset('gifs/04_protector.gif'),
-    fallbackGifUrl: githubAsset('04_protector.gif'),
+    gifUrl: '/gifs/04_protector.gif',
   },
   {
     id: 5,
     message: 'RightStamp – Đồng hành cùng tác phẩm của bạn.',
-    gifUrl: publicAsset('gifs/05_trust.gif'),
-    fallbackGifUrl: githubAsset('05_trust.gif'),
+    gifUrl: '/gifs/05_trust.gif',
   },
 ];
 
@@ -85,16 +74,6 @@ export default function FloatingRightyMascot() {
           alt="Righty Live Mascot"
           draggable={false}
           className="relative z-10 block w-full h-full object-contain bg-transparent"
-          onError={(event) => {
-            const image = event.currentTarget;
-
-            if (image.dataset.fallbackApplied === 'true') {
-              return;
-            }
-
-            image.dataset.fallbackApplied = 'true';
-            image.src = currentStep.fallbackGifUrl;
-          }}
         />
       </button>
     </div>
