@@ -1,161 +1,39 @@
 // src/components/FloatingRightyMascot.tsx
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 
 interface ActionStep {
   id: number;
   message: string;
-  type: 'video' | 'image';
-  src: string;
+  gifUrl: string;
 }
 
 const actionSteps: ActionStep[] = [
   {
     id: 1,
     message: 'Đã xác thực – bằng chứng rõ ràng.',
-    type: 'video',
-    src: '/gifs/01_verified.mp4',
+    gifUrl: '/gifs/01_verified.gif',
   },
   {
     id: 2,
     message: 'Tự do sáng tạo, RightStamp bảo vệ bạn.',
-    type: 'image',
-    src: '/gifs/02_creativity.gif',
+    gifUrl: '/gifs/02_creativity.gif',
   },
   {
     id: 3,
     message: 'Quét QR – minh bạch chủ sở hữu.',
-    type: 'image',
-    src: '/gifs/03_qr_scan.gif',
+    gifUrl: '/gifs/03_qr_scan.gif',
   },
   {
     id: 4,
     message: 'Lá chắn vững chắc chống đạo nhái.',
-    type: 'image',
-    src: '/gifs/04_protector.gif',
+    gifUrl: '/gifs/04_protector.gif',
   },
   {
     id: 5,
     message: 'RightStamp – Đồng hành cùng tác phẩm của bạn.',
-    type: 'image',
-    src: '/gifs/05_trust.gif',
+    gifUrl: '/gifs/05_trust.gif',
   },
 ];
-
-function GreenScreenVideo({
-  src,
-  className,
-}: {
-  src: string;
-  className?: string;
-}) {
-  const videoRef = useRef<HTMLVideoElement | null>(null);
-  const canvasRef = useRef<HTMLCanvasElement | null>(null);
-
-  useEffect(() => {
-    const video = videoRef.current;
-    const canvas = canvasRef.current;
-
-    if (!video || !canvas) return;
-
-    const context = canvas.getContext('2d', { willReadFrequently: true });
-    if (!context) return;
-
-    let frameId = 0;
-    let stopped = false;
-
-    const render = () => {
-      if (stopped) return;
-
-      if (video.readyState >= 2 && video.videoWidth > 0 && video.videoHeight > 0) {
-        const width = video.videoWidth;
-        const height = video.videoHeight;
-
-        if (canvas.width !== width) canvas.width = width;
-        if (canvas.height !== height) canvas.height = height;
-
-        context.clearRect(0, 0, width, height);
-        context.drawImage(video, 0, 0, width, height);
-
-        const frame = context.getImageData(0, 0, width, height);
-        const data = frame.data;
-
-        for (let i = 0; i < data.length; i += 4) {
-          const r = data[i];
-          const g = data[i + 1];
-          const b = data[i + 2];
-
-          const maxOther = Math.max(r, b);
-          const greenDominance = g - maxOther;
-
-          if (g > 80 && greenDominance > 22) {
-            const alphaCut = Math.min(1, (greenDominance - 22) / 90);
-            data[i + 3] = Math.round(data[i + 3] * (1 - alphaCut));
-          }
-
-          if (data[i + 3] > 0 && g > r && g > b) {
-            data[i + 1] = Math.max(maxOther, g - greenDominance * 0.7);
-          }
-        }
-
-        context.putImageData(frame, 0, 0);
-      }
-
-      frameId = window.requestAnimationFrame(render);
-    };
-
-    const playVideo = async () => {
-      try {
-        video.currentTime = video.currentTime || 0;
-        await video.play();
-      } catch {
-        // Nếu browser chặn autoplay, video sẽ chạy sau khi user tương tác.
-      }
-
-      render();
-    };
-
-    video.addEventListener('loadedmetadata', playVideo);
-    video.addEventListener('loadeddata', playVideo);
-    video.addEventListener('play', render);
-
-    if (video.readyState >= 2) {
-      playVideo();
-    }
-
-    return () => {
-      stopped = true;
-      window.cancelAnimationFrame(frameId);
-      video.removeEventListener('loadedmetadata', playVideo);
-      video.removeEventListener('loadeddata', playVideo);
-      video.removeEventListener('play', render);
-    };
-  }, [src]);
-
-  return (
-    <>
-      <video
-        ref={videoRef}
-        src={src}
-        muted
-        loop
-        autoPlay
-        playsInline
-        preload="auto"
-        aria-hidden="true"
-        style={{
-          position: 'absolute',
-          inset: 0,
-          width: '100%',
-          height: '100%',
-          opacity: 0,
-          pointerEvents: 'none',
-        }}
-      />
-
-      <canvas ref={canvasRef} className={className} />
-    </>
-  );
-}
 
 export default function FloatingRightyMascot() {
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
@@ -190,21 +68,13 @@ export default function FloatingRightyMascot() {
       >
         <span className="absolute inset-0 rounded-full bg-teal-400/15 blur-xl pointer-events-none" />
 
-        {currentStep.type === 'video' ? (
-          <GreenScreenVideo
-            key={currentStep.id}
-            src={currentStep.src}
-            className="relative z-10 block w-full h-full object-contain bg-transparent"
-          />
-        ) : (
-          <img
-            key={currentStep.id}
-            src={currentStep.src}
-            alt="Righty Live Mascot"
-            draggable={false}
-            className="relative z-10 block w-full h-full object-contain bg-transparent"
-          />
-        )}
+        <img
+          key={currentStep.id}
+          src={currentStep.gifUrl}
+          alt="Righty Live Mascot"
+          draggable={false}
+          className="relative z-10 block w-full h-full object-contain bg-transparent"
+        />
       </button>
     </div>
   );
